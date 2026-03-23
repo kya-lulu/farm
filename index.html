@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Our Garden · Magnolia</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Instrument+Sans:wght@400;500&display=swap');
+:root{--soil:#2c1f0e;--bark:#4a3020;--moss:#3d5220;--sage:#6a8848;--leaf:#8aad5a;--straw:#c8a464;--cream:#f4ede0;--parchment:#ece0cc;--sun:#d4a830;--warning:#b87020;--new-green:#2a6030;--lawn:#7ab858;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--cream);font-family:'Instrument Sans',sans-serif;color:var(--soil);display:flex;flex-direction:column;}
+.header{background:var(--bark);padding:12px 16px 10px;flex-shrink:0;}
+.site-name{font-family:'Fraunces',serif;font-size:1.45rem;font-weight:300;color:var(--cream);letter-spacing:-0.02em;}
+.site-name em{font-style:italic;color:var(--straw);}
+.site-sub{font-size:0.62rem;color:rgba(200,180,150,0.6);margin-top:2px;letter-spacing:0.1em;text-transform:uppercase;}
+.stripe{height:3px;background:repeating-linear-gradient(90deg,var(--leaf) 0,var(--leaf) 10px,var(--sage) 10px,var(--sage) 20px);flex-shrink:0;}
+.top-nav{background:#362818;display:flex;align-items:center;flex-shrink:0;}
+.yard-tab{flex:1;padding:9px 6px 8px;text-align:center;cursor:pointer;font-family:'Fraunces',serif;font-size:0.8rem;color:rgba(200,175,140,0.5);border-bottom:3px solid transparent;transition:color .2s,border-color .2s;user-select:none;-webkit-tap-highlight-color:transparent;}
+.yard-tab.active{color:var(--cream);border-bottom-color:var(--leaf);}
+.yard-tab-icon{font-size:0.85rem;display:block;margin-bottom:1px;}
+.view-toggle{display:flex;background:rgba(255,255,255,0.08);border-radius:7px;padding:3px;margin:5px 8px;gap:2px;flex-shrink:0;}
+.vt-btn{padding:4px 9px;border-radius:5px;font-size:0.7rem;cursor:pointer;color:rgba(200,175,140,0.55);transition:all .15s;user-select:none;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
+.vt-btn.active{background:var(--bark);color:var(--cream);}
+.main{flex:1;overflow:hidden;position:relative;}
+.yard-view{display:none;height:100%;}
+.yard-view.active{display:flex;flex-direction:column;}
+.map-wrap{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:#ddd8cc;position:relative;}
+.list-wrap{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 100px;}
+.map-svg-wrap{padding:12px;display:flex;justify-content:center;}
+svg text{font-family:'Instrument Sans',sans-serif;}
+.bed-tap{cursor:pointer;transition:filter .15s;}
+.bed-tap:hover{filter:brightness(1.08);}
+.bed-tap:active{filter:brightness(0.92);}
+.zone-block{margin-bottom:20px;}
+.zone-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:7px;}
+.zone-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;}
+.zone-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:400;color:var(--bark);line-height:1.15;margin-top:2px;}
+.zone-desc{font-size:0.65rem;color:var(--sage);margin-top:2px;}
+.zone-rule{height:1px;background:linear-gradient(90deg,rgba(106,136,72,0.3) 0%,transparent 80%);margin-bottom:9px;}
+.sect{font-size:0.57rem;letter-spacing:0.13em;text-transform:uppercase;color:var(--sage);margin:12px 0 6px;padding-bottom:3px;border-bottom:1px solid rgba(106,136,72,0.16);}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:6px;margin-bottom:4px;}
+.chip{background:#faf6f0;border:1.5px solid rgba(74,48,32,0.11);border-radius:11px;padding:10px 9px 8px;cursor:pointer;transition:transform .13s,box-shadow .13s;-webkit-tap-highlight-color:transparent;}
+.chip:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(44,31,14,0.1);border-color:var(--sage);}
+.chip.warn{border-color:rgba(184,112,32,0.35);background:#fdf6ea;}
+.chip.new{border-color:rgba(42,96,48,0.28);background:#f2f7ec;}
+.chip-em{font-size:1.35rem;display:block;margin-bottom:5px;}
+.chip-name{font-family:'Fraunces',serif;font-size:0.76rem;color:var(--bark);line-height:1.2;}
+.chip-tag{font-size:0.57rem;margin-top:3px;color:var(--sage);}
+.chip-tag.warn{color:var(--warning);}
+.chip-tag.new-tag{color:var(--new-green);font-weight:500;}
+.note{background:#fdf9ee;border-left:3px solid var(--sun);border-radius:0 8px 8px 0;padding:8px 11px;margin:7px 0;font-size:0.74rem;color:#5a4820;line-height:1.55;}
+.note.warn{background:#fdf4e8;border-left-color:var(--warning);color:#6a3a10;}
+.stairs-row{display:flex;align-items:center;gap:7px;padding:5px 9px;background:rgba(74,48,32,0.06);border-radius:6px;margin:6px 0;font-size:0.68rem;color:var(--bark);}
+.overlay{position:fixed;inset:0;background:rgba(30,18,8,0.65);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
+.overlay.open{display:flex;}
+.sheet{background:var(--cream);border-radius:20px 20px 0 0;width:100%;max-width:680px;max-height:86vh;overflow-y:auto;padding-bottom:36px;animation:up .23s cubic-bezier(.22,1,.36,1);}
+@keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.handle{width:34px;height:4px;background:rgba(74,48,32,0.17);border-radius:2px;margin:11px auto 0;}
+.sheet-head{display:flex;align-items:center;gap:11px;padding:12px 15px 11px;border-bottom:1px solid rgba(74,48,32,0.1);}
+.sheet-em{font-size:1.9rem;}
+.sheet-name{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:400;color:var(--bark);line-height:1.1;}
+.sheet-latin{font-family:'Fraunces',serif;font-style:italic;font-size:0.73rem;color:var(--sage);margin-top:2px;}
+.close-btn{margin-left:auto;width:27px;height:27px;border-radius:50%;background:var(--parchment);border:none;cursor:pointer;font-size:0.9rem;color:var(--bark);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sheet-body{padding:13px 15px;}
+.plant-desc{font-size:0.84rem;line-height:1.65;color:#4a3820;margin-bottom:13px;}
+.care-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:11px;}
+.care-box{background:var(--parchment);border-radius:10px;padding:9px;}
+.care-lbl{font-size:0.56rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--sage);margin-bottom:2px;}
+.care-val{font-size:0.78rem;color:var(--bark);font-weight:500;line-height:1.3;}
+.tips-box{background:#eef4e6;border-radius:10px;padding:11px;}
+.tips-lbl{font-size:0.57rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--moss);margin-bottom:6px;font-weight:500;}
+.tips-list{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.tips-list li{font-size:0.77rem;color:#384a20;line-height:1.5;padding-left:13px;position:relative;}
+.tips-list li::before{content:'→';position:absolute;left:0;color:var(--leaf);font-size:0.68rem;top:1px;}
+.seasons{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:11px;}
+.s-badge{border-radius:20px;padding:3px 8px;font-size:0.63rem;font-weight:500;}
+.s-sp{background:#e6f4dc;color:#1e5818;}.s-su{background:#fdf2cc;color:#7a4c00;}
+.s-fa{background:#fae6cc;color:#7a3408;}.s-wi{background:#e6eaf8;color:#2c3470;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="site-name">Our <em>Garden</em></div>
+  <div class="site-sub">Magnolia · Seattle · Zone 9a · Est. 2024</div>
+</div>
+<div class="stripe"></div>
+<div class="top-nav">
+  <div class="yard-tab active" id="tab-back" onclick="switchYard('back')"><span class="yard-tab-icon">🌿</span>Back Terraces</div>
+  <div class="yard-tab" id="tab-front" onclick="switchYard('front')"><span class="yard-tab-icon">🌸</span>Front Yard</div>
+  <div class="yard-tab" id="tab-weeds" onclick="switchYard('weeds')"><span class="yard-tab-icon">🌿</span>Weeds</div>
+  <div class="view-toggle">
+    <div class="vt-btn active" id="vt-map" onclick="switchView('map')">🗺 Map</div>
+    <div class="vt-btn" id="vt-list" onclick="switchView('list')">☰ List</div>
+  </div>
+</div>
+<div class="main">
+
+<!-- ══════════ BACK YARD ══════════ -->
+<div class="yard-view active" id="yard-back">
+<div class="map-wrap" id="map-back">
+<div class="map-svg-wrap">
+<svg width="340" height="870" viewBox="0 0 340 870" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <pattern id="grass" patternUnits="userSpaceOnUse" width="8" height="8">
+    <rect width="8" height="8" fill="#7ab858"/>
+    <line x1="0" y1="4" x2="8" y2="4" stroke="#6aaa48" stroke-width="0.5" opacity="0.4"/>
+  </pattern>
+  <pattern id="steps" patternUnits="userSpaceOnUse" width="14" height="8">
+    <rect width="14" height="8" fill="#b8b098"/>
+    <rect width="14" height="1.5" fill="#a8a080"/>
+    <rect y="4" width="14" height="1.5" fill="#a8a080"/>
+  </pattern>
+  <pattern id="gravel" patternUnits="userSpaceOnUse" width="6" height="6">
+    <rect width="6" height="6" fill="#c0b898"/>
+    <circle cx="2" cy="2" r="0.7" fill="#b0a888" opacity="0.6"/>
+    <circle cx="5" cy="4" r="0.7" fill="#b0a888" opacity="0.6"/>
+  </pattern>
+  <filter id="s" x="-10%" y="-10%" width="130%" height="130%">
+    <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.13"/>
+  </filter>
+</defs>
+
+<!-- bg -->
+<rect width="340" height="870" fill="#d4cfc3"/>
+
+<!-- FENCES -->
+<rect x="0" y="0" width="16" height="870" fill="#8a6840"/>
+<text x="8" y="435" fill="rgba(255,240,210,0.5)" font-size="6.5" text-anchor="middle" transform="rotate(-90,8,435)" letter-spacing="1">FENCE · NEIGHBOR</text>
+<rect x="324" y="0" width="16" height="870" fill="#7a6858"/>
+<text x="332" y="435" fill="rgba(255,240,210,0.45)" font-size="6.5" text-anchor="middle" transform="rotate(-90,332,435)" letter-spacing="1">NEIGHBOR</text>
+
+<!-- HOUSE — same length as deck -->
+<rect x="16" y="8" width="258" height="40" rx="5" fill="#5a6070" filter="url(#s)"/>
+<text x="120" y="32" fill="#e8dfc8" font-size="11" font-family="'Fraunces',serif" font-weight="300" text-anchor="middle">🏠 HOUSE</text>
+
+<!-- UPPER DECK — exact same width as house -->
+<rect x="16" y="48" width="258" height="22" rx="3" fill="#8a7a60"/>
+<line x1="50" y1="48" x2="50" y2="70" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+<line x1="84" y1="48" x2="84" y2="70" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+<line x1="118" y1="48" x2="118" y2="70" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+<line x1="152" y1="48" x2="152" y2="70" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+<line x1="186" y1="48" x2="186" y2="70" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+<line x1="220" y1="48" x2="220" y2="70" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+<line x1="250" y1="48" x2="250" y2="70" stroke="rgba(0,0,0,0.1)" stroke-width="1"/>
+<text x="137" y="62" fill="#d8c8a8" font-size="7.5" text-anchor="middle" letter-spacing="0.5">UPPER DECK</text>
+
+<!-- STAIRS — in the gap between deck end (x=274) and right fence (x=324), full height of house+deck -->
+<rect x="274" y="8" width="50" height="62" rx="3" fill="url(#steps)" filter="url(#s)"/>
+<line x1="274" y1="22" x2="324" y2="22" stroke="rgba(0,0,0,0.15)" stroke-width="1"/>
+<line x1="274" y1="36" x2="324" y2="36" stroke="rgba(0,0,0,0.15)" stroke-width="1"/>
+<line x1="274" y1="50" x2="324" y2="50" stroke="rgba(0,0,0,0.15)" stroke-width="1"/>
+<line x1="274" y1="56" x2="324" y2="56" stroke="rgba(0,0,0,0.15)" stroke-width="1"/>
+<text x="299" y="42" fill="rgba(44,31,14,0.6)" font-size="6.5" text-anchor="middle">STAIRS</text>
+<text x="299" y="54" fill="rgba(44,31,14,0.45)" font-size="5.5" text-anchor="middle">entry</text>
+
+<!-- ═══ TERRACE 1 ═══ -->
+<text x="170" y="84" fill="rgba(44,31,14,0.4)" font-size="7.5" text-anchor="middle" letter-spacing="1" font-style="italic">· Terrace 1 · Upper ·</text>
+
+<!-- SUNNY EDIBLES left -->
+<rect x="20" y="90" width="60" height="72" rx="8" fill="#c8e0a8" stroke="rgba(60,130,60,0.3)" stroke-width="1.5" class="bed-tap" onclick="openZone('sunny-edibles')" filter="url(#s)"/>
+<text x="50" y="110" fill="#2a4010" font-size="11" text-anchor="middle">🫛</text>
+<text x="50" y="123" fill="#2a4010" font-size="7.5" text-anchor="middle" font-family="'Fraunces',serif">Sunny</text>
+<text x="50" y="134" fill="#2a4010" font-size="7.5" text-anchor="middle" font-family="'Fraunces',serif">Edibles</text>
+<text x="50" y="146" fill="rgba(42,64,16,0.5)" font-size="5" text-anchor="middle">peas · leeks</text>
+
+<!-- STAIRS between snap peas and tulip bed -->
+<rect x="83" y="90" width="20" height="72" rx="3" fill="url(#steps)"/>
+<text x="93" y="130" fill="rgba(44,31,14,0.5)" font-size="5.5" text-anchor="middle" transform="rotate(-90,93,130)">stairs</text>
+
+<!-- TULIP BED center — with cherry tree icon inside -->
+<rect x="106" y="90" width="118" height="72" rx="10" fill="#f0d8e0" stroke="rgba(180,100,130,0.3)" stroke-width="1.5" class="bed-tap" onclick="openZone('flower-bed')" filter="url(#s)"/>
+<text x="152" y="112" fill="#6a2840" font-size="11" text-anchor="middle">🌷</text>
+<text x="152" y="125" fill="#6a2840" font-size="7.5" text-anchor="middle" font-family="'Fraunces',serif">Flower Bed</text>
+<text x="152" y="136" fill="rgba(106,40,64,0.55)" font-size="5.5" text-anchor="middle">tulips · lavender · icicle plant</text>
+<!-- cherry tree in tulip bed -->
+<circle cx="202" cy="118" r="13" fill="rgba(210,160,180,0.2)" stroke="rgba(200,120,150,0.35)" stroke-width="1.2"/>
+<text x="202" y="121" font-size="11" text-anchor="middle">🌸</text>
+<text x="202" y="153" fill="rgba(106,40,64,0.5)" font-size="5" text-anchor="middle">cherry</text>
+
+<!-- BONSAI between tulip bed and borage -->
+<circle cx="244" cy="130" r="11" fill="rgba(180,80,60,0.12)" stroke="rgba(180,80,60,0.3)" stroke-width="1.2"/>
+<text x="244" y="134" font-size="11" text-anchor="middle">🍁</text>
+<text x="244" y="148" fill="rgba(100,40,20,0.5)" font-size="5" text-anchor="middle">Bonsai</text>
+
+<!-- BORAGE CORNER right — shifted down closer to retaining wall -->
+<ellipse cx="296" cy="142" rx="28" ry="28" fill="#d4e8c8" stroke="rgba(80,140,60,0.3)" stroke-width="1.5" class="bed-tap" onclick="openZone('borage-corner')" filter="url(#s)" style="cursor:pointer;"/>
+<text x="296" y="132" fill="#204010" font-size="10" text-anchor="middle">🌀</text>
+<text x="296" y="145" fill="#204010" font-size="7" text-anchor="middle" font-family="'Fraunces',serif">Borage</text>
+<text x="296" y="156" fill="#204010" font-size="7" text-anchor="middle" font-family="'Fraunces',serif">Corner</text>
+
+<!-- retaining wall T1→T2 — organic curved line, NO stairs here -->
+<path d="M16 168 Q70 174 130 170 Q190 166 250 172 Q285 176 324 168" stroke="#a09878" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M16 171 Q70 177 130 173 Q190 169 250 175 Q285 179 324 171" stroke="#b8b098" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+<!-- ═══ TERRACE 2 ═══ -->
+<text x="170" y="190" fill="rgba(44,31,14,0.4)" font-size="7.5" text-anchor="middle" letter-spacing="1" font-style="italic">· Terrace 2 · Productive ·</text>
+
+<!--
+  T2 ROW: [Greens 60w] [stairs 20w] [Raspberry circle ~68w] [gravel 14w] [Lavender run 82w] [Cauliflower+Brussels 78w]
+  All on same horizontal row, y=196, height=80
+-->
+
+<!-- GREENS BED left — same width as snap peas -->
+<rect x="20" y="196" width="60" height="80" rx="8" fill="#c8e8b0" stroke="rgba(60,130,60,0.3)" stroke-width="1.5" class="bed-tap" onclick="openZone('greens-bed')" filter="url(#s)"/>
+<text x="50" y="220" fill="#1a4010" font-size="10" text-anchor="middle">🥬</text>
+<text x="50" y="232" fill="#1a4010" font-size="7.5" text-anchor="middle" font-family="'Fraunces',serif">Leafy</text>
+<text x="50" y="243" fill="#1a4010" font-size="7.5" text-anchor="middle" font-family="'Fraunces',serif">Greens</text>
+<text x="50" y="256" fill="rgba(26,64,16,0.55)" font-size="5" text-anchor="middle">chard·kale·sorrel</text>
+<text x="50" y="265" fill="rgba(26,64,16,0.5)" font-size="4.5" text-anchor="middle">⚠ bolting</text>
+
+<!-- STAIRS between greens and raspberry -->
+<rect x="83" y="196" width="20" height="50" rx="3" fill="url(#steps)"/>
+<text x="93" y="224" fill="rgba(44,31,14,0.5)" font-size="5.5" text-anchor="middle" transform="rotate(-90,93,224)">stairs</text>
+
+<!-- RASPBERRY CIRCLE -->
+<ellipse cx="136" cy="236" rx="32" ry="32" fill="#f0d8c8" stroke="rgba(180,80,60,0.3)" stroke-width="1.5" class="bed-tap" onclick="openZone('raspberry-circle')" filter="url(#s)"/>
+<text x="136" y="226" fill="#6a2010" font-size="10" text-anchor="middle">🍓</text>
+<text x="136" y="238" fill="#6a2010" font-size="7" text-anchor="middle" font-family="'Fraunces',serif">Raspberry</text>
+<text x="136" y="248" fill="#6a2010" font-size="7" text-anchor="middle" font-family="'Fraunces',serif">Circle</text>
+<text x="136" y="258" fill="rgba(106,32,16,0.5)" font-size="5" text-anchor="middle">+ black currant · alyssum</text>
+
+<!-- LAVENDER RUN — long flat strip, left of cauliflower, right of raspberry -->
+<rect x="168" y="238" width="100" height="18" rx="4" fill="#e0d4f0" stroke="rgba(120,90,170,0.3)" stroke-width="1.5" class="bed-tap" onclick="openZone('lavender-run')" filter="url(#s)"/>
+<text x="218" y="251" fill="#4a2880" font-size="7.5" text-anchor="middle">💜 Lavender Run</text>
+
+<!-- CAULIFLOWER + BRUSSELS — squarish, right of lavender run -->
+<rect x="270" y="206" width="52" height="60" rx="8" fill="#d0e8c0" stroke="rgba(60,130,60,0.3)" stroke-width="1.5" class="bed-tap" onclick="openZone('veg-right')" filter="url(#s)"/>
+<text x="296" y="226" fill="#1a4010" font-size="9" text-anchor="middle">🌕🟢</text>
+<text x="296" y="239" fill="#1a4010" font-size="6.5" text-anchor="middle" font-family="'Fraunces',serif">Cauli +</text>
+<text x="296" y="250" fill="#1a4010" font-size="6.5" text-anchor="middle" font-family="'Fraunces',serif">Brussels</text>
+<text x="296" y="261" fill="rgba(26,64,16,0.5)" font-size="5" text-anchor="middle">+ tomatoes</text>
+
+<!-- retaining wall T2→T3 — NO stairs here -->
+<path d="M16 284 Q70 290 130 286 Q195 282 255 288 Q290 292 324 284" stroke="#a09878" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M16 287 Q70 293 130 289 Q195 285 255 291 Q290 295 324 287" stroke="#b8b098" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+<!-- ═══ TERRACE 3 ═══ -->
+<text x="170" y="304" fill="rgba(44,31,14,0.4)" font-size="7.5" text-anchor="middle" letter-spacing="1" font-style="italic">· Terrace 3 · Native Pollinators ·</text>
+
+<!-- GOLDENROD + YARROW left organic blob -->
+<ellipse cx="68" cy="340" rx="46" ry="34" fill="#e0ecc0" stroke="rgba(100,140,40,0.3)" stroke-width="1.5" class="bed-tap" onclick="openZone('goldenrod-yarrow')" filter="url(#s)"/>
+<text x="68" y="328" fill="#3a4810" font-size="10" text-anchor="middle">🌼🌾</text>
+<text x="68" y="341" fill="#3a4810" font-size="7" text-anchor="middle" font-family="'Fraunces',serif">Native</text>
+<text x="68" y="351" fill="#3a4810" font-size="7" text-anchor="middle" font-family="'Fraunces',serif">Pollinators</text>
+<text x="68" y="362" fill="rgba(58,72,16,0.5)" font-size="5" text-anchor="middle">goldenrod · yarrow</text>
+
+<!-- plum trees left side T3 -->
+<circle cx="28" cy="318" r="11" fill="rgba(200,120,140,0.15)" stroke="rgba(200,120,140,0.3)" stroke-width="1.2"/>
+<text x="28" y="321" font-size="11" text-anchor="middle">🌸</text>
+<text x="28" y="333" fill="rgba(44,31,14,0.38)" font-size="5" text-anchor="middle">plum</text>
+<circle cx="30" cy="358" r="10" fill="rgba(200,120,140,0.15)" stroke="rgba(200,120,140,0.3)" stroke-width="1.2"/>
+<text x="30" y="361" font-size="10" text-anchor="middle">🌸</text>
+<text x="30" y="373" fill="rgba(44,31,14,0.38)" font-size="5" text-anchor="middle">plum</text>
+
+<!-- STAIRS between goldenrod and English laurel -->
+<rect x="116" y="316" width="20" height="50" rx="3" fill="url(#steps)"/>
+<text x="126" y="344" fill="rgba(44,31,14,0.5)" font-size="5.5" text-anchor="middle" transform="rotate(-90,126,344)">stairs</text>
+
+<!-- ENGLISH LAUREL hedge right of center -->
+<rect x="140" y="310" width="122" height="58" rx="10" fill="#c8d8b0" stroke="rgba(80,110,50,0.35)" stroke-width="2" class="bed-tap" onclick="openPlant('english-laurel')" filter="url(#s)"/>
+<text x="201" y="330" fill="#203010" font-size="10" text-anchor="middle">🌳</text>
+<text x="201" y="343" fill="#203010" font-size="7.5" text-anchor="middle" font-family="'Fraunces',serif">English Laurel</text>
+<text x="201" y="355" fill="rgba(32,48,16,0.5)" font-size="5.5" text-anchor="middle">large hedge · existing</text>
+<!-- Forsythia beside laurel -->
+<ellipse cx="290" cy="336" rx="26" ry="22" fill="#f0e890" stroke="rgba(180,160,40,0.4)" stroke-width="1.5" class="bed-tap" onclick="openPlant('forsythia')" filter="url(#s)"/>
+<text x="290" y="330" font-size="10" text-anchor="middle">💛</text>
+<text x="290" y="342" fill="#5a4800" font-size="6.5" text-anchor="middle" font-family="'Fraunces',serif">Common</text>
+<text x="290" y="352" fill="rgba(90,72,0,0.5)" font-size="5" text-anchor="middle">Plum Tree</text>
+
+<!-- retaining wall T3→T4 — NO stairs here -->
+<path d="M16 378 Q80 384 145 380 Q205 376 265 382 Q295 386 324 378" stroke="#a09878" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M16 381 Q80 387 145 383 Q205 379 265 385 Q295 389 324 381" stroke="#b8b098" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+<!-- ═══ TERRACE 4 ═══ -->
+<text x="170" y="400" fill="rgba(44,31,14,0.4)" font-size="7.5" text-anchor="middle" letter-spacing="1" font-style="italic">· Terrace 4 · Lower ·</text>
+
+<!-- ANGEL BELLS (one plant) left -->
+<rect x="20" y="408" width="68" height="62" rx="10" fill="#f0d8e4" stroke="rgba(180,80,120,0.3)" stroke-width="1.5" class="bed-tap" onclick="openPlant('angel-bells')" filter="url(#s)"/>
+<text x="54" y="430" fill="#6a1840" font-size="10" text-anchor="middle">🔔</text>
+<text x="54" y="443" fill="#6a1840" font-size="7.5" text-anchor="middle" font-family="'Fraunces',serif">Angel Bells</text>
+<text x="54" y="454" fill="rgba(106,24,64,0.5)" font-size="5" text-anchor="middle">existing · left side</text>
+<!-- plum by angel bells -->
+<circle cx="24" cy="416" r="9" fill="rgba(200,120,140,0.15)" stroke="rgba(200,120,140,0.3)" stroke-width="1.2"/>
+<text x="24" y="419" font-size="9" text-anchor="middle">🌸</text>
+
+<!-- STAIRS between Angel Bells and Lavender+Bok Choy -->
+<rect x="90" y="420" width="16" height="36" rx="3" fill="url(#steps)"/>
+<line x1="90" y1="427" x2="106" y2="427" stroke="rgba(0,0,0,0.09)" stroke-width="1"/>
+<line x1="90" y1="435" x2="106" y2="435" stroke="rgba(0,0,0,0.09)" stroke-width="1"/>
+<line x1="90" y1="443" x2="106" y2="443" stroke="rgba(0,0,0,0.09)" stroke-width="1"/>
+<text x="98" y="442" fill="rgba(44,31,14,0.45)" font-size="5" text-anchor="middle" transform="rotate(-90,98,442)">stair</text>
+
+<!-- LAVENDER + BOK CHOY — starts after stairs -->
+<rect x="108" y="408" width="130" height="62" rx="10" fill="#e4d8f4" stroke="rgba(120,90,170,0.3)" stroke-width="1.5" class="bed-tap" onclick="openZone('lower-center')" filter="url(#s)"/>
+<text x="173" y="430" fill="#3a1870" font-size="10" text-anchor="middle">💜🥬</text>
+<text x="173" y="443" fill="#3a1870" font-size="7.5" text-anchor="middle" font-family="'Fraunces',serif">Provence Lavender</text>
+<text x="173" y="454" fill="rgba(58,24,112,0.5)" font-size="5" text-anchor="middle">×3 plants · 2 thriving · 1 struggling</text>
+
+<!-- RIGHT PLANTING BED — flowers TBD -->
+<rect x="246" y="408" width="76" height="62" rx="10" fill="#f4e8d4" stroke="rgba(180,140,60,0.3)" stroke-width="1.5" class="bed-tap" onclick="openZone('right-bed')" filter="url(#s)"/>
+<text x="284" y="430" fill="#6a4010" font-size="10" text-anchor="middle">🌸</text>
+<text x="284" y="443" fill="#6a4010" font-size="7.5" text-anchor="middle" font-family="'Fraunces',serif">Right Bed</text>
+<text x="284" y="454" fill="rgba(106,64,16,0.5)" font-size="5" text-anchor="middle">flowers · TBD</text>
+<!-- plum right side -->
+<circle cx="314" cy="418" r="9" fill="rgba(200,120,140,0.15)" stroke="rgba(200,120,140,0.3)" stroke-width="1.2"/>
+<text x="314" y="421" font-size="9" text-anchor="middle">🌸</text>
+
+<!-- lawn edge wall -->
+<path d="M16 480 Q80 486 160 482 Q220 478 280 484 Q305 488 324 480" stroke="#a09878" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+<!-- MAIN LAWN -->
+<rect x="16" y="490" width="308" height="76" rx="8" fill="url(#grass)"/>
+<text x="170" y="532" fill="rgba(255,255,255,0.9)" font-size="12" text-anchor="middle" font-family="'Fraunces',serif" font-weight="300">🌿 MAIN LAWN</text>
+<text x="170" y="548" fill="rgba(255,255,255,0.65)" font-size="7.5" text-anchor="middle">dog zone · tennis balls 🎾</text>
+<!-- plum trees on lawn -->
+<circle cx="88" cy="508" r="13" fill="rgba(200,120,140,0.2)" stroke="rgba(200,120,140,0.35)" stroke-width="1.5"/>
+<text x="88" y="512" font-size="12" text-anchor="middle">🌸</text>
+<text x="88" y="528" fill="rgba(255,255,255,0.6)" font-size="5.5" text-anchor="middle">plum</text>
+<circle cx="244" cy="508" r="13" fill="rgba(200,120,140,0.2)" stroke="rgba(200,120,140,0.35)" stroke-width="1.5"/>
+<text x="244" y="512" font-size="12" text-anchor="middle">🌸</text>
+<text x="244" y="528" fill="rgba(255,255,255,0.6)" font-size="5.5" text-anchor="middle">plum</text>
+
+<!-- compass / orientation -->
+<text x="170" y="584" fill="rgba(44,31,14,0.35)" font-size="7" text-anchor="middle" letter-spacing="0.4">⬆ east (house) · ⬇ west (street) · full sun south-facing slope</text>
+
+<!-- LEGEND -->
+<rect x="20" y="594" width="136" height="20" rx="4" fill="rgba(200,120,140,0.1)" stroke="rgba(200,120,140,0.28)" stroke-width="1"/>
+<text x="88" y="608" fill="rgba(106,32,60,0.65)" font-size="6.5" text-anchor="middle">🌸 = plum tree (6 total)</text>
+<rect x="164" y="594" width="156" height="20" rx="4" fill="rgba(80,110,40,0.08)" stroke="rgba(80,110,40,0.25)" stroke-width="1"/>
+<text x="242" y="608" fill="rgba(44,80,20,0.6)" font-size="6.5" text-anchor="middle">🌳 = tree (ID TBD) · 🍁 = Japanese maple</text>
+
+</svg>
+</div>
+</div>
+
+<!-- LIST BACK -->
+<div class="list-wrap" id="list-back" style="display:none;">
+
+  <!-- TERRACE 1 -->
+  <div class="zone-block">
+    <div class="zone-head"><div class="zone-dot" style="background:#edf4e0;">🫛</div><div>
+      <div class="zone-title">Terrace 1 — Upper</div>
+      <div class="zone-desc">Closest to house · partial shade from building</div>
+    </div></div>
+    <div class="zone-rule"></div>
+    <div class="sect">Left · Sunny Edibles</div>
+    <div class="grid">
+      <div class="chip" onclick="openZone('sunny-edibles')"><span class="chip-em">🫛</span><div class="chip-name">Sunny Edibles</div><div class="chip-tag">tap for bed overview</div></div>
+      <div class="chip" onclick="openPlant('snap-peas')"><span class="chip-em">🫛</span><div class="chip-name">Snap Peas</div><div class="chip-tag">bamboo sticks ✓</div></div>
+      <div class="chip" onclick="openPlant('leeks')"><span class="chip-em">🧅</span><div class="chip-name">Leeks</div><div class="chip-tag">existing ✓</div></div>
+    </div>
+    <div class="stairs-row">🪜 Stairs between Sunny Edibles and Flower Bed</div>
+    <div class="sect">Center · Flower Bed (under cherry tree)</div>
+    <div class="note">⚠️ Sow seeds in gaps AROUND tulips — don't disturb bulbs</div>
+    <div class="grid">
+      <div class="chip" onclick="openZone('flower-bed')"><span class="chip-em">🌸</span><div class="chip-name">Flower Bed</div><div class="chip-tag">tap for bed overview</div></div>
+      <div class="chip" onclick="openPlant('tulips')"><span class="chip-em">🌷</span><div class="chip-name">Tulips</div><div class="chip-tag">existing — let die back</div></div>
+      <div class="chip" onclick="openPlant('french-lavender')"><span class="chip-em">💜</span><div class="chip-name">French Lavender</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip" onclick="openPlant('icicle-plant')"><span class="chip-em">🌿</span><div class="chip-name">Icicle Plant</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip new" onclick="openPlant('ca-poppy')"><span class="chip-em">🌺</span><div class="chip-name">California Poppies</div><div class="chip-tag new-tag">sow NOW ✦</div></div>
+      <div class="chip new" onclick="openPlant('calendula')"><span class="chip-em">🌻</span><div class="chip-name">Calendula</div><div class="chip-tag new-tag">sow NOW ✦</div></div>
+      <div class="chip new" onclick="openPlant('chamomile')"><span class="chip-em">🌼</span><div class="chip-name">Chamomile</div><div class="chip-tag new-tag">sow ✦</div></div>
+      <div class="chip new" onclick="openPlant('agastache')"><span class="chip-em">🌸</span><div class="chip-name">Agastache</div><div class="chip-tag new-tag">sunniest end ✦</div></div>
+      <div class="chip" onclick="openPlant('cherry-tree')"><span class="chip-em">🌸</span><div class="chip-name">Cherry Tree</div><div class="chip-tag">in bed</div></div>
+    </div>
+    <div class="sect">Between Beds · Bonsai</div>
+    <div class="grid">
+      <div class="chip" onclick="openPlant('japanese-maple')"><span class="chip-em">🍁</span><div class="chip-name">Bonsai</div><div class="chip-tag">between flower bed + borage</div></div>
+    </div>
+    <div class="sect">Right · Borage Corner</div>
+    <div class="grid">
+      <div class="chip" onclick="openZone('borage-corner')"><span class="chip-em">🌀</span><div class="chip-name">Borage Corner</div><div class="chip-tag">tap for bed overview</div></div>
+      <div class="chip" onclick="openPlant('borage')"><span class="chip-em">🌀</span><div class="chip-name">Borage</div><div class="chip-tag">reseeded ✓ strong</div></div>
+      <div class="chip" onclick="openPlant('strawberry')"><span class="chip-em">🍓</span><div class="chip-name">Strawberries</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip new" onclick="openPlant('nasturtium')"><span class="chip-em">🧡</span><div class="chip-name">Nasturtiums</div><div class="chip-tag new-tag">direct sow ✦</div></div>
+      <div class="chip" onclick="openPlant('penstemon')"><span class="chip-em">🌺</span><div class="chip-name">Penstemon</div><div class="chip-tag">native · hummingbirds</div></div>
+    </div>
+  </div>
+
+  <!-- TERRACE 2 -->
+  <div class="zone-block">
+    <div class="zone-head"><div class="zone-dot" style="background:#d8f0cc;">🥬</div><div>
+      <div class="zone-title">Terrace 2 — Productive</div>
+      <div class="zone-desc">Full sun · most productive zone</div>
+    </div></div>
+    <div class="zone-rule"></div>
+    <div class="sect">Left · Leafy Greens</div>
+    <div class="note warn">⚠️ Currently bolting — keep ONE kale for seed saving, refresh with spinach + arugula now</div>
+    <div class="grid">
+      <div class="chip" onclick="openZone('greens-bed')"><span class="chip-em">🥬</span><div class="chip-name">Leafy Greens</div><div class="chip-tag">tap for bed overview</div></div>
+      <div class="chip" onclick="openPlant('swiss-chard')"><span class="chip-em">🌈</span><div class="chip-name">Swiss Chard</div><div class="chip-tag">proven ✓</div></div>
+      <div class="chip" onclick="openPlant('kale')"><span class="chip-em">🥬</span><div class="chip-name">Kale Lacinato</div><div class="chip-tag">proven ✓</div></div>
+      <div class="chip" onclick="openPlant('sorrel')"><span class="chip-em">🌿</span><div class="chip-name">Sorrel</div><div class="chip-tag">perennial — never remove</div></div>
+      <div class="chip warn" onclick="openPlant('spinach')"><span class="chip-em">🌱</span><div class="chip-name">Spinach</div><div class="chip-tag warn">shadiest corner only</div></div>
+      <div class="chip" onclick="openPlant('arugula')"><span class="chip-em">🌿</span><div class="chip-name">Arugula</div><div class="chip-tag">reseed every 4 wks</div></div>
+    </div>
+    <div class="stairs-row">🪜 Stairs between Leafy Greens and Raspberry Circle</div>
+    <div class="sect">Center · Raspberry Circle</div>
+    <div class="grid">
+      <div class="chip" onclick="openZone('raspberry-circle')"><span class="chip-em">🍓</span><div class="chip-name">Raspberry Circle</div><div class="chip-tag">tap for bed overview</div></div>
+      <div class="chip" onclick="openPlant('raspberry')"><span class="chip-em">🍓</span><div class="chip-name">Raspberry</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip" onclick="openPlant('black-currant')"><span class="chip-em">🫐</span><div class="chip-name">Black Currant</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip" onclick="openPlant('alyssum')"><span class="chip-em">🤍</span><div class="chip-name">Sweet Alyssum</div><div class="chip-tag">front lip</div></div>
+    </div>
+    <div class="sect">Center Strip · Grosso Lavender Run</div>
+    <div class="grid">
+      <div class="chip" onclick="openZone('lavender-run')"><span class="chip-em">💜</span><div class="chip-name">Lavender Run</div><div class="chip-tag">tap for bed overview</div></div>
+      <div class="chip" onclick="openPlant('lavender-grosso')"><span class="chip-em">💜</span><div class="chip-name">Grosso Lavender</div><div class="chip-tag">continuous strip ✓</div></div>
+    </div>
+    <div class="sect">Right · Right Veg Bed</div>
+    <div class="grid">
+      <div class="chip" onclick="openZone('veg-right')"><span class="chip-em">🥦</span><div class="chip-name">Right Veg Bed</div><div class="chip-tag">tap for bed overview</div></div>
+      <div class="chip" onclick="openPlant('cauliflower')"><span class="chip-em">🌕</span><div class="chip-name">Cauliflower</div><div class="chip-tag">now ✓</div></div>
+      <div class="chip" onclick="openPlant('brussels')"><span class="chip-em">🟢</span><div class="chip-name">Brussels Sprouts</div><div class="chip-tag">now ✓</div></div>
+      <div class="chip new" onclick="openPlant('tomatoes')"><span class="chip-em">🍅</span><div class="chip-name">Cherry Tomatoes</div><div class="chip-tag new-tag">late April ✦</div></div>
+      <div class="chip new" onclick="openPlant('peppers')"><span class="chip-em">🌶️</span><div class="chip-name">Green Peppers</div><div class="chip-tag new-tag">late April ✦</div></div>
+      <div class="chip new" onclick="openPlant('jalapenos')"><span class="chip-em">🌶️</span><div class="chip-name">Jalapeños</div><div class="chip-tag new-tag">late April ✦</div></div>
+      <div class="chip" onclick="openPlant('nasturtium')"><span class="chip-em">🧡</span><div class="chip-name">Nasturtium</div><div class="chip-tag">companion ✓</div></div>
+      <div class="chip" onclick="openPlant('calendula')"><span class="chip-em">🌻</span><div class="chip-name">Calendula</div><div class="chip-tag">companion ✓</div></div>
+    </div>
+  </div>
+
+  <!-- TERRACE 3 -->
+  <div class="zone-block">
+    <div class="zone-head"><div class="zone-dot" style="background:#e0f0c8;">🌼</div><div>
+      <div class="zone-title">Terrace 3 — Native Pollinators</div>
+      <div class="zone-desc">Full sun · silty soil · pulling grass back this season</div>
+    </div></div>
+    <div class="zone-rule"></div>
+    <div class="note warn">⚠️ Grass overran this bed in winter — pull carefully around crowns, the yarrow and goldenrod are alive underneath</div>
+    <div class="grid">
+      <div class="chip" onclick="openZone('goldenrod-yarrow')"><span class="chip-em">🌼</span><div class="chip-name">Native Pollinators</div><div class="chip-tag">tap for bed overview</div></div>
+      <div class="chip" onclick="openPlant('goldenrod')"><span class="chip-em">🌾</span><div class="chip-name">Goldenrod</div><div class="chip-tag">existing — reclaiming</div></div>
+      <div class="chip" onclick="openPlant('yarrow-yellow')"><span class="chip-em">🌼</span><div class="chip-name">Yellow Yarrow</div><div class="chip-tag">existing — reclaiming</div></div>
+      <div class="chip" onclick="openPlant('yarrow-red')"><span class="chip-em">🌺</span><div class="chip-name">Fire Red Yarrow</div><div class="chip-tag">existing — reclaiming</div></div>
+    </div>
+    <div class="stairs-row">🪜 Stairs between Native Pollinators and English Laurel</div>
+    <div class="grid">
+      <div class="chip" onclick="openPlant('english-laurel')"><span class="chip-em">🌳</span><div class="chip-name">English Laurel</div><div class="chip-tag">large hedge ✓</div></div>
+      <div class="chip" onclick="openPlant('forsythia')"><span class="chip-em">🌸</span><div class="chip-name">Common Plum Tree</div><div class="chip-tag">drops plums · confirmed</div></div>
+    </div>
+  </div>
+
+  <!-- TERRACE 4 -->
+  <div class="zone-block">
+    <div class="zone-head"><div class="zone-dot" style="background:#e8e4d8;">🌱</div><div>
+      <div class="zone-title">Terrace 4 — Lower</div>
+      <div class="zone-desc">Bottom level · late morning to afternoon sun · ~6 plum trees on left + lawn</div>
+    </div></div>
+    <div class="zone-rule"></div>
+    <div class="grid">
+      <div class="chip" onclick="openPlant('angel-bells')"><span class="chip-em">🔔</span><div class="chip-name">Angel Bells</div><div class="chip-tag">×1 · left side ✓</div></div>
+    </div>
+    <div class="stairs-row">🪜 Stairs between Angel Bells and Provence Lavender</div>
+    <div class="sect">Center · Provence Lavender</div>
+    <div class="grid">
+      <div class="chip" onclick="openZone('lower-center')"><span class="chip-em">💜</span><div class="chip-name">Provence Lavender</div><div class="chip-tag">tap for bed overview</div></div>
+      <div class="chip" onclick="openPlant('provence-lavender')"><span class="chip-em">💜</span><div class="chip-name">Provence Lavender</div><div class="chip-tag">×3 · 2 thriving · 1 struggling</div></div>
+      <div class="chip" onclick="openPlant('bok-choy')"><span class="chip-em">🥬</span><div class="chip-name">Bok Choy</div><div class="chip-tag">new ✦</div></div>
+    </div>
+    <div class="sect">Right · Assorted Bed</div>
+    <div class="grid">
+      <div class="chip" onclick="openZone('right-bed')"><span class="chip-em">🌿</span><div class="chip-name">Assorted Bed</div><div class="chip-tag">tap for bed overview</div></div>
+      <div class="chip" onclick="openPlant('chamomile')"><span class="chip-em">🌼</span><div class="chip-name">Chamomile</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip" onclick="openPlant('stevia')"><span class="chip-em">🌿</span><div class="chip-name">Stevia</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip" onclick="openPlant('kale')"><span class="chip-em">🥬</span><div class="chip-name">Kale</div><div class="chip-tag">existing ✓</div></div>
+    </div>
+    <div class="sect">Plum Trees</div>
+    <div class="grid">
+      <div class="chip" onclick="openPlant('plum-tree')"><span class="chip-em">🌸</span><div class="chip-name">Plum Trees (~6)</div><div class="chip-tag">left side + main lawn</div></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- FRONT YARD -->
+<div class="yard-view" id="yard-front">
+<div class="map-wrap" id="map-front">
+<div class="map-svg-wrap">
+<svg width="340" height="480" viewBox="0 0 340 480" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <pattern id="gf" patternUnits="userSpaceOnUse" width="8" height="8">
+    <rect width="8" height="8" fill="#7ab858"/>
+    <line x1="0" y1="4" x2="8" y2="4" stroke="#6aaa48" stroke-width="0.5" opacity="0.4"/>
+  </pattern>
+  <pattern id="gf2" patternUnits="userSpaceOnUse" width="8" height="8">
+    <rect width="8" height="8" fill="#9aca70"/>
+    <line x1="0" y1="4" x2="8" y2="4" stroke="#8aba60" stroke-width="0.5" opacity="0.3"/>
+  </pattern>
+  <pattern id="ivypat" patternUnits="userSpaceOnUse" width="10" height="10">
+    <rect width="10" height="10" fill="#4a7838"/>
+    <circle cx="3" cy="3" r="2" fill="#3a6828" opacity="0.5"/>
+    <circle cx="7" cy="7" r="2" fill="#5a8848" opacity="0.5"/>
+  </pattern>
+  <filter id="sf3"><feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-opacity="0.12"/></filter>
+</defs>
+
+<!-- Background -->
+<rect width="340" height="480" fill="#d8d2c4"/>
+
+<!-- ══════════════════════════════════
+     ROW 1: HOUSE  y=8..48
+     Full width house bar
+     ══════════════════════════════════ -->
+<rect x="14" y="8" width="312" height="40" rx="4" fill="#5a6070" filter="url(#sf3)"/>
+<text x="170" y="32" fill="#e8dfc8" font-size="11" font-family="'Fraunces',serif" font-weight="300" text-anchor="middle">🏠 HOUSE</text>
+
+<!-- ══════════════════════════════════
+     ROW 2: DOOR + SHRUB LINE  y=50..74
+     Door:       x=148..174  (26px wide)
+     Shrub line: x=176..326  (right of door only)
+     Gap left of door: oval patch fills x=14..146
+     ══════════════════════════════════ -->
+
+<!-- Door indicator (narrow, at top of pathway) -->
+<rect x="148" y="50" width="26" height="24" rx="3" fill="#9a8a6a"/>
+<text x="161" y="60" fill="rgba(255,248,220,0.9)" font-size="5.5" text-anchor="middle" font-weight="600">DOOR</text>
+<text x="161" y="70" fill="rgba(255,248,220,0.7)" font-size="6" text-anchor="middle">↓</text>
+
+<!-- Shrub line: starts at x=176 (right of door), y=50..76 (26px tall) -->
+<rect x="176" y="50" width="150" height="26" rx="6" fill="#d8e8c0" stroke="rgba(80,120,50,0.3)" stroke-width="1.5" class="bed-tap" onclick="openZone('shrub-line')" filter="url(#sf3)" style="cursor:pointer;"/>
+<text x="251" y="60" fill="#2a4010" font-size="7" text-anchor="middle">💜🌵🌼 Shrub Line</text>
+<text x="251" y="71" fill="rgba(42,64,16,0.5)" font-size="4.8" text-anchor="middle">lav · succulent · tulip · creeper · daylily</text>
+
+<!-- ══════════════════════════════════
+     MAIN ZONE  y=76..226
+     Oval patch: x=14..146   (stops 2px before pathway)
+     Pathway:    x=148..174  (26px wide, continuous)
+     Lawn:       x=176..326  (right of pathway)
+     ══════════════════════════════════ -->
+
+<!-- OVAL PATCH: x=14..146, y=52..258 -->
+<path d="M 14 52 L 144 52 L 144 188 Q 142 228 118 248 Q 96 258 60 256 Q 28 254 14 234 Z"
+      fill="#f0dce8" stroke="rgba(180,100,130,0.3)" stroke-width="1.5"
+      class="bed-tap" onclick="openZone('oval-patch')" filter="url(#sf3)" style="cursor:pointer;"/>
+<text x="76" y="120" fill="#6a2840" font-size="10" text-anchor="middle">🌸</text>
+<text x="76" y="134" fill="#6a2840" font-size="7.5" text-anchor="middle" font-family="'Fraunces',serif">Oval Patch</text>
+<text x="76" y="146" fill="rgba(106,40,64,0.55)" font-size="5.5" text-anchor="middle">delphinium · poppy · bergamot</text>
+<text x="76" y="157" fill="rgba(106,40,64,0.5)" font-size="5.5" text-anchor="middle">salvia · iris · dianthus · hornwort</text>
+<text x="32" y="200" fill="rgba(60,100,40,0.5)" font-size="5" font-style="italic">ivy →</text>
+
+<!-- PATHWAY: thin stroked line only, no fill, curves from door to gate -->
+<path d="M 161 74 L 161 210 Q 161 240 132 258 Q 104 268 68 272 Q 50 273 36 272"
+      fill="none" stroke="#c8c0a8" stroke-width="14" stroke-linecap="round"/>
+<path d="M 161 74 L 161 210 Q 161 240 132 258 Q 104 268 68 272 Q 50 273 36 272"
+      fill="none" stroke="#d8d0b8" stroke-width="10" stroke-linecap="round"/>
+<text x="169" y="158" fill="rgba(44,31,14,0.28)" font-size="5" text-anchor="middle" transform="rotate(-90,169,158)">pathway</text>
+
+<!-- LAWN: x=176..326, y=76..222 -->
+<rect x="176" y="76" width="150" height="146" rx="6" fill="url(#gf)" filter="url(#sf3)"/>
+<text x="251" y="148" fill="rgba(255,255,255,0.9)" font-size="10" text-anchor="middle" font-family="'Fraunces',serif">🌿 LAWN</text>
+<text x="251" y="162" fill="rgba(255,255,255,0.65)" font-size="7" text-anchor="middle">dog zone 🎾</text>
+
+<!-- ══════════════════════════════════
+     ROW 3: HYACINTH + IVY  y=226..268
+     Gate:           x=14..58    y=252..274
+     Hyacinth strip: x=62..258   y=226..248  (22px tall)
+     Ivy corner:     x=262..326  y=222..268
+     ══════════════════════════════════ -->
+
+<!-- IVY + FERNS corner: x=262..326, y=222..268 -->
+<rect x="262" y="222" width="64" height="46" rx="8" fill="url(#ivypat)" stroke="rgba(60,100,40,0.3)" stroke-width="1.5"
+      class="bed-tap" onclick="openZone('ivy-corner')" filter="url(#sf3)" style="cursor:pointer;pointer-events:all;" pointer-events="all"/>
+<text x="285" y="238" fill="#e8f4e0" font-size="7" text-anchor="middle">🌿</text>
+<circle cx="315" cy="232" r="10" fill="rgba(180,80,60,0.2)" stroke="rgba(180,80,60,0.35)" stroke-width="1"/>
+<text x="315" y="236" font-size="10" text-anchor="middle">🌸</text>
+<text x="315" y="247" fill="rgba(232,244,224,0.7)" font-size="4" text-anchor="middle">tree?</text>
+<text x="294" y="249" fill="#e8f4e0" font-size="6" text-anchor="middle" font-family="'Fraunces',serif">Ivy + Ferns</text>
+<text x="294" y="259" fill="rgba(232,244,224,0.6)" font-size="4.5" text-anchor="middle">bluebells · tree</text>
+
+<!-- HYACINTH STRIP: starts right of where pathway meets fence (~x=170), ends before ivy corner -->
+<rect x="170" y="252" width="88" height="16" rx="6" fill="#ecdff8" stroke="rgba(120,80,160,0.3)" stroke-width="1.5"
+      class="bed-tap" onclick="openZone('boulder-strip')" filter="url(#sf3)" style="cursor:pointer;"/>
+<text x="214" y="261" fill="#4a2880" font-size="6" text-anchor="middle">💜 Boulder Line</text>
+<text x="214" y="268" fill="rgba(74,40,128,0.6)" font-size="4.5" text-anchor="middle">boulder strip</text>
+
+<!-- GATE: x=14..58, y=252..274 -->
+<rect x="14" y="252" width="44" height="22" rx="4" fill="#c8a860" stroke="#a08040" stroke-width="1.5"/>
+<text x="36" y="261" fill="#5a3800" font-size="6.5" text-anchor="middle" font-weight="600">GATE</text>
+<text x="36" y="271" fill="#5a3800" font-size="5.5" text-anchor="middle">↓ street</text>
+
+<!-- ══════════════════════════════════
+     FENCE LINE  y=278
+     ══════════════════════════════════ -->
+<rect x="0" y="278" width="340" height="9" fill="#9a7840"/>
+
+<!-- Left cedar fence vertical -->
+<rect x="0" y="0" width="12" height="278" fill="#9a7840"/>
+<text x="6" y="140" fill="rgba(255,240,200,0.45)" font-size="5.5" text-anchor="middle" transform="rotate(-90,6,140)" letter-spacing="1">CEDAR FENCE</text>
+
+<!-- Right black fence vertical -->
+<rect x="328" y="0" width="12" height="222" fill="#383838"/>
+<text x="334" y="111" fill="rgba(255,255,255,0.35)" font-size="5.5" text-anchor="middle" transform="rotate(-90,334,111)" letter-spacing="1">BLACK FENCE</text>
+<!-- Right fence bottom section -->
+<rect x="328" y="222" width="12" height="56" fill="#9a7840"/>
+
+<!-- ══════════════════════════════════
+     OUTSIDE FENCE  y=287..
+     ══════════════════════════════════ -->
+<rect x="0" y="289" width="340" height="11" rx="0" fill="#88b858" opacity="0.8"/>
+<text x="170" y="298" fill="rgba(255,255,255,0.55)" font-size="5" text-anchor="middle">thin grass strip</text>
+
+<rect x="0" y="302" width="340" height="14" fill="#c8c0b0"/>
+<text x="170" y="313" fill="rgba(44,31,14,0.45)" font-size="6" text-anchor="middle" letter-spacing="1">SIDEWALK</text>
+
+<rect x="0" y="318" width="340" height="44" rx="4" fill="url(#gf2)"
+      class="bed-tap" onclick="openZone('street-lawn')" style="cursor:pointer;" filter="url(#sf3)"/>
+<text x="170" y="339" fill="rgba(255,255,255,0.9)" font-size="8.5" text-anchor="middle" font-family="'Fraunces',serif">🌱 Street Lawn</text>
+<text x="170" y="352" fill="rgba(255,255,255,0.65)" font-size="5.5" text-anchor="middle">grass · future garden bed potential</text>
+
+<rect x="0" y="364" width="340" height="14" fill="#a0a0a0" opacity="0.5"/>
+<text x="170" y="374" fill="rgba(255,255,255,0.5)" font-size="5.5" text-anchor="middle" letter-spacing="2">STREET</text>
+
+<text x="170" y="398" fill="rgba(44,31,14,0.28)" font-size="6" text-anchor="middle">⬆ house / east  ·  ⬇ street / west</text>
+</svg>
+</div>
+</div></div>
+<div class="list-wrap" id="list-front" style="display:none;">
+  <div class="zone-block">
+    <div class="zone-head"><div class="zone-dot" style="background:#edf4e0;">🌸</div><div><div class="zone-title">Oval Patch</div><div class="zone-desc">Left of walkway · ivy removal in progress · Japanese maple left corner</div></div></div>
+    <div class="zone-rule"></div>
+    <div class="grid">
+      <div class="chip" onclick="openPlant('delphinium')"><span class="chip-em">💙</span><div class="chip-name">Delphinium</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip" onclick="openPlant('poppy-front')"><span class="chip-em">🌺</span><div class="chip-name">Poppies</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip" onclick="openPlant('bergamot')"><span class="chip-em">🌸</span><div class="chip-name">Bergamot</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip" onclick="openPlant('salvia-front')"><span class="chip-em">💜</span><div class="chip-name">Salvia</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip" onclick="openPlant('iris')"><span class="chip-em">🪻</span><div class="chip-name">Iris</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip" onclick="openPlant('japanese-maple')"><span class="chip-em">🍁</span><div class="chip-name">Japanese Maple</div><div class="chip-tag">left fence corner</div></div>
+      <div class="chip new" onclick="openPlant('yarrow-front')"><span class="chip-em">🌼</span><div class="chip-name">Yarrow</div><div class="chip-tag new-tag">add spring ✦</div></div>
+      <div class="chip new" onclick="openPlant('echinacea')"><span class="chip-em">🌸</span><div class="chip-name">Echinacea</div><div class="chip-tag new-tag">add spring ✦</div></div>
+    </div>
+  </div>
+  <div class="zone-block">
+    <div class="zone-head"><div class="zone-dot" style="background:#e8f0dc;">🌿</div><div><div class="zone-title">Shrub Line</div><div class="zone-desc">Right of walkway · along house wall</div></div></div>
+    <div class="zone-rule"></div>
+    <div class="grid">
+      <div class="chip" onclick="openPlant('lavender-front')"><span class="chip-em">💜</span><div class="chip-name">Lavender</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip" onclick="openPlant('succulent-front')"><span class="chip-em">🌵</span><div class="chip-name">Succulents (jade + mix)</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip" onclick="openPlant('tulips')"><span class="chip-em">🌷</span><div class="chip-name">Tulip</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip" onclick="openPlant('winter-creeper')"><span class="chip-em">🌿</span><div class="chip-name">Winter Creeper ×2</div><div class="chip-tag">existing ✓</div></div>
+      <div class="chip" onclick="openPlant('day-lily')"><span class="chip-em">🌼</span><div class="chip-name">Day Lily</div><div class="chip-tag">pollinator ✓</div></div>
+      <div class="chip warn" onclick="openPlant('rhododendron')"><span class="chip-em">⚠️</span><div class="chip-name">Rhododendron</div><div class="chip-tag warn">struggling — consider moving</div></div>
+    </div>
+  </div>
+  <div class="zone-block">
+    <div class="zone-head"><div class="zone-dot" style="background:#e8e0d0;">🪨</div><div><div class="zone-title">Boulder Strip</div><div class="zone-desc">Along cedar fence · right side</div></div></div>
+    <div class="zone-rule"></div>
+    <div class="grid">
+      <div class="chip" onclick="openPlant('hyacinth-boulder')"><span class="chip-em">💜</span><div class="chip-name">Hyacinths</div><div class="chip-tag">between boulders ✓</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ══════════ WEEDS ══════════ -->
+<div class="yard-view" id="yard-weeds">
+<div class="list-wrap" id="list-weeds" style="display:block;">
+<div style="padding:4px 0 16px;">
+  <div style="font-family:'Fraunces',serif;font-size:1.1rem;color:#4a3020;margin-bottom:4px;">Common Weeds · Magnolia Seattle</div>
+  <div style="font-size:0.72rem;color:#6a8848;line-height:1.5;">Tap any weed to ID it and learn how to deal with it. <span style="background:#fdf0e0;border:1px solid #b87020;border-radius:10px;padding:1px 7px;font-size:0.65rem;color:#b87020;">in your garden</span> means spotted at your property.</div>
+</div>
+<div id="weed-grid"></div>
+</div>
+</div>
+</div><!-- main -->
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="maybeClose(event)">
+  <div class="sheet" id="sheet">
+    <div class="handle"></div>
+    <button id="back-btn" onclick="goBackToZone()" style="display:none;align-items:center;gap:6px;margin:10px 15px 0;padding:6px 12px;background:#eef4e6;border:1px solid rgba(106,136,72,0.3);border-radius:20px;font-size:0.72rem;color:#3d5220;cursor:pointer;font-family:'Instrument Sans',sans-serif;">← Back to bed</button>
+    <div class="sheet-head">
+      <div class="sheet-em" id="m-em">🌿</div>
+      <div><div class="sheet-name" id="m-name">Plant</div><div class="sheet-latin" id="m-latin"></div></div>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="sheet-body">
+      <p class="plant-desc" id="m-desc"></p>
+      <div class="seasons" id="m-seasons"></div>
+      <div class="care-grid">
+        <div class="care-box"><div class="care-lbl">☀️ Sun</div><div class="care-val" id="m-sun"></div></div>
+        <div class="care-box"><div class="care-lbl">💧 Water</div><div class="care-val" id="m-water"></div></div>
+        <div class="care-box"><div class="care-lbl">🌱 Soil</div><div class="care-val" id="m-soil"></div></div>
+        <div class="care-box"><div class="care-lbl">📅 Timing</div><div class="care-val" id="m-timing"></div></div>
+      </div>
+      <div class="tips-box">
+        <div class="tips-lbl">🌿 Care Tips for Your Garden</div>
+        <ul class="tips-list" id="m-tips"></ul>
+      </div>
+      <div id="weed-gallery" style="display:none;margin-top:14px;">
+        <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:#6a8848;margin-bottom:8px;font-weight:500;">📸 Photo Examples</div>
+        <div id="weed-gallery-imgs" style="display:flex;gap:6px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const P={
+'snap-peas':{em:'🫛',name:'Snap Peas',latin:'Pisum sativum',
+  desc:'Growing up bamboo sticks in the Sunny Edibles bed. One of the earliest harvests of the season — sweet, crunchy pods you can eat whole.',
+  sun:'Full sun — morning through early afternoon',
+  water:'Every 2–3 days — water deeply at the base, about 1 inch per week. This bed retains moisture well so avoid daily watering which can cause root rot.',
+  soil:'Your loamy rocky soil is great for peas — well-draining but moisture-retentive. No amendment needed.',
+  timing:'Plant now · harvest May–Jun',
+  seasons:['sp'],
+  tips:[
+    'Keep picking every 2–3 days — the more you pick, the more the plant produces. Leaving pods on stops flowering.',
+    'Water at the base, not overhead — wet foliage invites powdery mildew',
+    'Your bamboo sticks are perfect — tie loosely with twine as they grow taller',
+    'No fertilizer needed — peas fix their own nitrogen. Too much fertilizer = leaves, no pods.',
+    'When they finish in July, leave the roots in the ground — they add nitrogen for whatever you plant next',
+    'Follow with beans or nasturtiums in the same bed after July — they love the nitrogen peas leave behind',
+    'Mulch lightly around the base to keep soil cool and moist — straw works great'
+  ]
+},
+'tulips':{em:'🌷',name:'Tulips',latin:'Tulipa',desc:'Centerpiece of Terrace 1 tulip bed, under the cherry tree. Already emerging — let bloom fully and die back completely before removing foliage.',sun:'Full to partial sun',water:'Low — need dry summer dormancy',soil:'Well-drained',timing:'Blooms Apr–May',seasons:['sp'],tips:['Never cut foliage until yellow and papery — bulbs recharging','Sow calendula + poppy seeds in gaps around them NOW','May need replacing every few years in Zone 9a','Bulb fertilizer in fall keeps them reblooming']},
+'ca-poppy':{em:'🌺',name:'California Poppy',latin:'Eschscholzia californica',desc:'Surface sow NOW in open gaps around tulips. Will rush in beautifully as tulips fade in May.',sun:'Full sun',water:'Very low',soil:'Poor, well-drained',timing:'Sow now · blooms May–Sep',seasons:['sp','su'],tips:['Surface sow only — press to soil, don\'t cover','Reseed themselves forever once established','Don\'t transplant — direct sow only','More you pick, more they bloom']},
+'calendula':{em:'🌻',name:'Calendula',latin:'Calendula officinalis',desc:'Direct sow NOW at ¼" depth. Fast-growing, edible flowers, great companion plant.',sun:'Full sun',water:'Low to moderate',soil:'Average',timing:'Sow now · blooms May–frost',seasons:['sp','su','fa'],tips:['Pick constantly — deadheading = more blooms','Edible petals in salads or dry for tea','Great cut flower','Self-seeds generously every year']},
+'chamomile':{em:'🌼',name:'Chamomile',latin:'Matricaria chamomilla',desc:'Press to surface and let work — self-seeding annual that naturalizes beautifully.',sun:'Full to partial sun',water:'Low',soil:'Poor to average',timing:'Sow now · blooms Jun–Aug',seasons:['sp','su'],tips:['Press seeds to surface — needs light to germinate','Let some go to seed every year','Harvest when fully open for best tea flavor','Companion plant that benefits neighbors']},
+'agastache':{em:'🌸',name:'Agastache',latin:'Agastache foeniculum',desc:'Best plant for Anna\'s hummingbirds. Long purple-blue spikes from summer into fall. Plant at the sunniest end of the tulip bed.',sun:'Full sun — hottest spot',water:'Low once established',soil:'Well-drained, lean',timing:'Blooms Jul–Oct',seasons:['su','fa'],tips:['Buy starts — faster to establish than seed','Leave seed heads for goldfinches in fall','Drought tolerant once established year 2','Hummingbirds find it within days of planting']},
+'borage':{em:'🌀',name:'Borage',latin:'Borago officinalis',desc:'Reseeded strongly in your upper right corner. Star-shaped blue flowers that bees love. Edible flowers taste like cucumber.',sun:'Full to partial sun',water:'Low',soil:'Average to poor',timing:'Blooms May–Sep',seasons:['sp','su'],tips:['Leave mostly wild — it self-manages','Pull seedlings in wrong spots; let rest grow','Edible flowers + young leaves in salads','Will reseed forever — your only job is redirecting']},
+'nasturtium':{em:'🧡',name:'Nasturtiums',latin:'Tropaeolum majus',desc:'Direct sow edges of borage corner to spill over the wall. Every part is edible.',sun:'Full to partial sun',water:'Low',soil:'Poor to average — no fertilizer',timing:'Sow now · blooms Jun–frost',seasons:['su','fa'],tips:['Direct sow only — hate transplanting','Poor soil = more flowers; rich = all leaves','Flowers, leaves, seeds all edible','Aphid trap crop — plant near susceptible plants']},
+'penstemon':{em:'🌺',name:'Penstemon',latin:'Penstemon spp.',desc:'Native to PNW and one of the best plants for Anna\'s hummingbirds.',sun:'Full sun',water:'Very low',soil:'Well-drained, lean',timing:'Blooms May–Jul',seasons:['sp','su'],tips:['Lean soil — too rich = floppy growth','Cut back ⅓ after bloom for rebloom','Long-lived — can thrive 5–10 years','Top 5 hummingbird plant for PNW']},
+'japanese-maple':{em:'🍁',name:'Bonsai? (Japanese Maple?)',latin:'Acer palmatum',desc:'Between the tulip bed and borage corner — provides dappled shade and stunning fall color.',sun:'Partial shade preferred',water:'Moderate, consistent',soil:'Rich, well-drained, slightly acidic',timing:'Fall color Oct–Nov',seasons:['sp','su','fa'],tips:['Never prune in spring — wait until fully leafed or winter dormancy','Mulch well to keep roots cool and moist','Wind protection matters — sheltered by fence is ideal','In drought, water deeply 1×/week']},
+'unknown-shrub':{em:'🌳',name:'Unknown Shrub',latin:'ID pending',desc:'A bonsai-like shrub between the tulip bed and borage corner. Needs identification when fully leafed out this spring.',sun:'Unknown',water:'Unknown',soil:'Unknown',timing:'ID this spring',seasons:['sp'],tips:['Photograph when fully leafed out for ID','Note any flowers, berries, or distinctive bark patterns','Could be a Japanese-style pruned shrub from previous owners','Once identified we can add proper care info']},
+'swiss-chard':{em:'🌈',name:'Swiss Chard (Rainbow)',latin:'Beta vulgaris',desc:'Your proven Zone 9a star. Rainbow chard thrives in your greens bed and provides harvests spring through winter.',sun:'Partial sun — tolerates shade',water:'Moderate, consistent',soil:'Rich, moisture-retentive',timing:'Year-round in Zone 9a',seasons:['sp','su','fa','wi'],tips:['Harvest outer leaves — center keeps producing','Bolts in heat — cut to 4" and it regrows','Mulch well for moisture','Most productive plant per sq ft in your garden']},
+'kale':{em:'🥬',name:'Kale Lacinato',latin:'Brassica oleracea',desc:'Proven performer — lacinato is hardier and more heat-tolerant than curly types.',sun:'Partial to full sun',water:'Moderate',soil:'Rich, fertile',timing:'Year-round in Zone 9a',seasons:['sp','su','fa','wi'],tips:['Leave ONE to bolt fully for seed saving','Harvest lower leaves first','Caterpillars in summer — check undersides','Gets sweeter after frost']},
+'sorrel':{em:'🌿',name:'Sorrel',latin:'Rumex acetosa',desc:'Perennial green that never needs replanting. Lemony, tangy flavor. Never remove it.',sun:'Partial to full sun',water:'Moderate',soil:'Average',timing:'Perennial · harvest spring–fall',seasons:['sp','su','fa'],tips:['Never remove — permanent fixture','Young leaves = best flavor','Cut flower stalks to redirect energy','Divide every few years and share with neighbors']},
+'butter-lettuce':{em:'🥗',name:'Butter Lettuce (Mix)',latin:'Lactuca sativa',desc:'New this year — bolt-resistant varieties for the shadiest part of the greens bed.',sun:'Partial shade',water:'Consistent moisture',soil:'Rich, moisture-retentive',timing:'Plant now · harvest Apr–Jun',seasons:['sp'],tips:['Shadiest spot — extends season','Harvest outer leaves for ongoing production','Bolts at 70°F — succession plant every 3 weeks','Mulch to keep roots cool']},
+'spinach':{em:'🌱',name:'Spinach',latin:'Spinacia oleracea',desc:'Shadiest corner ONLY — bolted too fast last year. Shade cloth in May is your best tool.',sun:'Shade — shadiest corner only',water:'Consistent — never let dry',soil:'Rich, nitrogen-heavy',timing:'Plant now · harvest Apr–May',seasons:['sp'],tips:['Shadiest spot + shade cloth in May = best defense','Harvest whole plants when big enough','Succession plant every 2 weeks','Once it bolts, pull and replant']},
+'arugula':{em:'🌿',name:'Arugula',latin:'Eruca vesicaria',desc:'Reseed every 4 weeks for continuous harvest. Fastest green from seed to table.',sun:'Partial shade',water:'Moderate',soil:'Average',timing:'Reseed every 4 wks year-round',seasons:['sp','su','fa','wi'],tips:['New small patch every 4 weeks = continuous harvest','Gets spicy in heat — shade helps','Edible flowers when it bolts','3–4 weeks from seed to harvest']},
+'black-currant':{em:'🫐',name:'Black Currant',latin:'Ribes nigrum',
+  desc:'Growing in the Raspberry Circle — black currants are incredibly productive and nearly maintenance-free once established. Rich tart berries packed with vitamin C.',
+  sun:'Full sun to partial shade — tolerates more shade than most fruit',
+  water:'Moderate — every 3–4 days. Sandy soil here means checking more frequently in summer.',
+  soil:'Adaptable but prefers slightly moist — add compost around the base to improve moisture retention',
+  timing:'Blooms spring · harvest Jun–Jul',
+  seasons:['su'],
+  tips:[
+    'Harvest when berries are fully black and slightly soft — taste one to check sweetness',
+    'Prune out old dark stems after harvest — new pale stems are next year\'s producers',
+    'Net the bush before berries ripen — birds will take everything overnight',
+    'Makes exceptional jam, cordial, and sorbet — far better than anything you can buy',
+    'Very cold hardy — one of the toughest fruit bushes you can grow in Zone 9a'
+  ]
+},
+'raspberry':{em:'🫐',name:'Raspberry',latin:'Rubus idaeus',desc:'Two canes in the center circle, just leafing out. Extremely productive once established.',sun:'Full to partial sun',water:'Moderate, consistent',soil:'Rich, well-drained, slightly acidic',timing:'Harvest Jul–Aug',seasons:['su'],tips:['Give canes room — don\'t crowd','Tie to stake now while pliable','Prune old canes after harvest in fall','Remove fennel volunteer if confirmed — inhibits raspberries']},
+'strawberry':{em:'🍓',name:'Strawberries',latin:'Fragaria × ananassa',desc:'Plant around the raspberry circle edges — spread via runners, fill beautifully by year 2.',sun:'Full sun',water:'Moderate, consistent',soil:'Rich, well-drained',timing:'Harvest May–Jun',seasons:['sp','su'],tips:['Plant crown at soil level — too deep rots','Runners root wherever they touch soil','Mulch with straw to keep berries clean','Remove runners year 1; let run year 2']},
+'alyssum':{em:'🤍',name:'Sweet Alyssum',latin:'Lobularia maritima',desc:'Honey-scented white flowers spilling over the wall front lip.',sun:'Full to partial sun',water:'Low to moderate',soil:'Average',timing:'Blooms May–frost',seasons:['sp','su','fa'],tips:['Self-seeds reliably — free plants every year','Shear back half in midsummer for fall flush','Fragrance strongest in evening','Great front-of-border edger everywhere']},
+'lavender-grosso':{em:'💜',name:'Grosso French Lavender',latin:'Lavandula x intermedia Grosso',
+  desc:'The continuous lavender run on Terrace 2 is all Grosso — the most productive and aromatic lavender variety. A hybrid between English and Portuguese lavender, Grosso is the commercial lavender growers use.',
+  sun:'Full sun — needs at least 6 hours. Your run gets good sun most of the day.',
+  water:'Every 5–7 days — lavender strongly prefers dry conditions. Overwatering is the main killer. Your mixed sandy-loamy soil drains well enough.',
+  soil:'Your sandy-loamy mix is good — lavender prefers lean, well-drained soil. Do not amend with compost here.',
+  timing:'Blooms Jun–Aug · harvest just as buds open',
+  seasons:['su'],
+  tips:[
+    'Weed around the crowns regularly — grass is your biggest enemy here and competes aggressively',
+    'Prune by 1/3 after flowering — cut back to where you see green growth, never into old woody stems',
+    'Harvest when about half the buds on each spike are open — best fragrance and longest vase life',
+    'Grosso produces more oil than any other variety — great for drying, sachets, and cooking',
+    'Do not fertilize — lean soil keeps lavender compact and fragrant. Rich soil = leggy plants, fewer flowers',
+    'Use a stirrup hoe between plants for quick weeding without disturbing roots'
+  ]
+},
+'lavender-mid':{em:'💜',name:'Lavender',latin:'Lavandula angustifolia',desc:'Existing along the lavender run on Terrace 2. The south-facing slope is perfect lavender habitat.',sun:'Full sun',water:'Very low — do not overwater',soil:'Lean, well-drained',timing:'Blooms Jun–Aug',seasons:['su'],tips:['Prune ⅓ after flowering — never cut woody growth','Dry slope conditions here are perfect','Harvest as buds open for best fragrance','Will become large woody shrub over 10 years']},
+'stevia':{em:'🌿',name:'Stevia',latin:'Stevia rebaudiana',desc:'Permanent in the lavender run — intensely sweet leaves. Flowers in late summer attract pollinators.',sun:'Full sun',water:'Moderate',soil:'Well-drained',timing:'Harvest leaves summer–fall',seasons:['su','fa'],tips:['Pinch flowers to extend leaf harvest','Dry leaves for tea or baking','Late-season pollinators love the flowers','Cut back hard in early spring — regrows vigorously']},
+'cauliflower':{em:'🌕',name:'Cauliflower',latin:'Brassica oleracea (Botrytis)',desc:'Two plants now in the right veg bed. Green varieties are more heat tolerant for your south-facing slope.',sun:'Full sun',water:'Consistent moisture',soil:'Rich, fertile',timing:'Plant now · harvest Jun–Jul',seasons:['sp','su'],tips:['Feed every 2 weeks — heavy feeders','If heat arrives before heads form, replace with tomatoes','Harvest when heads are tight and compact','One of the most satisfying harvests in the garden']},
+'brussels':{em:'🟢',name:'Brussels Sprouts',latin:'Brassica oleracea (Gemmifera)',desc:'Plant 2–3 now in the right bed. Zone 9a is perfect for a long cool growing season.',sun:'Full sun',water:'Consistent, moderate to heavy',soil:'Rich, fertile, well-drained',timing:'Plant now · harvest Oct–Jan',seasons:['fa','wi'],tips:['Plant deeply — bury stem to lowest leaves','Stake at 18 inches — top-heavy in wind','Harvest bottom-up as sprouts reach marble size','Improves flavor significantly after first frost']},
+'tomatoes':{em:'🍅',name:'Cherry Tomatoes',latin:'Solanum lycopersicum',desc:'Add late April. Your south-facing Terrace 2 is perfect tomato habitat.',sun:'Full sun 8+ hrs',water:'Deep 2×/week — consistent',soil:'Rich, well-drained',timing:'Plant late Apr · harvest Jul–Oct',seasons:['su','fa'],tips:['Wait until soil is consistently warm — late April minimum','Stake or cage immediately at planting','Water at base not overhead — prevents blight','Pinch suckers for fewer but larger fruit']},
+'jalapenos':{em:'🌶️',name:'Jalapeños',latin:'Capsicum annuum',
+  desc:'Grown in the Right Veg Bed last summer — jalapeños love the hot sunny conditions here. Plan to add them again in late April with the other peppers.',
+  sun:'Full sun — the hotter the better for peppers',
+  water:'Every 2 days when fruiting — this bed loses water fast. Consistent moisture prevents blossom drop.',
+  soil:'Adding compost before planting improves performance — current sandy-loamy mix is decent but dries out fast',
+  timing:'Plant late Apr · harvest Jul–Oct',
+  seasons:['su','fa'],
+  tips:[
+    'Plant after soil is consistently warm — late April in Zone 9a',
+    'Pick some green and leave some to ripen red — red jalapeños are sweeter and slightly hotter',
+    'The more you pick, the more they produce — harvest frequently',
+    'Stress (slight water restriction) actually increases heat level if you want hotter peppers',
+    'Roast and freeze any surplus — they keep perfectly and taste even better roasted'
+  ]
+},
+'peppers':{em:'🌶️',name:'Peppers',latin:'Capsicum annuum',desc:'Add with tomatoes late April. Warm slope ideal — peppers need heat more than almost any vegetable.',sun:'Full sun, warm position',water:'Moderate — consistent',soil:'Rich, well-drained',timing:'Plant late Apr · harvest Aug–Oct',seasons:['su','fa'],tips:['Warmest spot — against wall if possible','Don\'t rush — sulk in cold soil below 60°F','Weekly liquid feed once fruiting increases yield','Let ripen to red — sweeter and more nutritious']},
+'basil':{em:'🌿',name:'Basil',latin:'Ocimum basilicum',desc:'At the base of each tomato — classic companion repelling pests.',sun:'Full sun',water:'Moderate — water at base',soil:'Rich, well-drained',timing:'Plant with tomatoes late April',seasons:['su'],tips:['Pinch flower buds constantly to keep leaves coming','Water at base in morning','Harvest from top pinching above leaf pair','Freeze pesto in bulk in August']},
+'yarrow-yellow':{em:'🌼',name:'Yellow Yarrow',latin:'Achillea millefolium (yellow)',
+  desc:'Existing in the Native Pollinators bed — yellow yarrow is a tough indigenous PNW plant that feeds pollinators all summer long. Getting overrun by grass but the crowns are alive.',
+  sun:'Full sun',water:'Very low once established — extremely drought tolerant. Water every 5–7 days this first season while reclaiming from grass.',
+  soil:'Adaptable — thrives in your silty soil. Do not fertilize or amend.',
+  timing:'Blooms Jun–Sep',seasons:['su','fa'],
+  tips:[
+    'Pull grass carefully around the crown — do not disturb the roots',
+    'Once grass is cleared it will spread and fill in naturally over 1–2 seasons',
+    'Flat flower heads are perfect pollinator landing pads — bees cover them in summer',
+    'Cut back by half after first bloom for a second flush of flowers',
+    'Divide in spring every 3 years to keep it vigorous and spread it around the bed'
+  ]
+},
+'yarrow-red':{em:'🌺',name:'Fire Red Yarrow',latin:'Achillea millefolium (red cultivar)',
+  desc:'Growing alongside yellow yarrow in the Native Pollinators bed — red yarrow varieties like Paprika or Red Beauty have the same tough pollinator-magnet qualities but with dramatic warm-colored flowers.',
+  sun:'Full sun',water:'Very low — same as yellow yarrow, extremely drought tolerant',
+  soil:'Adaptable silty soil — do not fertilize',
+  timing:'Blooms Jun–Sep',seasons:['su','fa'],
+  tips:[
+    'Same care as yellow yarrow — pull grass, let it fill in',
+    'Red varieties can fade to pink or salmon as they age — this is normal',
+    'Deadhead spent flowers to encourage more blooms and prevent excessive self-seeding',
+    'Beautiful cut flower — harvest when half the flowers on a stem are open',
+    'Interplanting yellow and red yarrow creates a stunning late-summer display'
+  ]
+},
+'goldenrod':{em:'🌾',name:'Goldenrod',latin:'Solidago canadensis',desc:'Existing on Terrace 3 under winter grass. Crown is alive and will return strongly once cleared.',sun:'Full sun',water:'Low',soil:'Average to poor',timing:'Blooms Aug–Oct',seasons:['su','fa'],tips:['Pull grass carefully around crown this spring','Once re-established will suppress weeds naturally','Divide every 3 years if clump gets too large','Does NOT cause hay fever — that\'s ragweed']},
+'yarrow-back':{em:'🌼',name:'Yarrow',latin:'Achillea millefolium',desc:'Existing on Terrace 3, buried under grass. Roots intact — will bounce back fast.',sun:'Full sun',water:'Very low',soil:'Poor to average',timing:'Blooms Jun–Sep',seasons:['su','fa'],tips:['Don\'t fertilize — poor soil = more flowers','Flat flower heads are pollinator landing pads','Cut back after first bloom for second flush','Indigenous to PNW — maintenance free once established']},
+'english-laurel':{em:'🌳',name:'English Laurel',latin:'Prunus laurocerasus',desc:'The large glossy evergreen hedge on Terrace 3. Creates a dense privacy screen.',sun:'Full to partial shade',water:'Low once established',soil:'Adaptable',timing:'Evergreen year-round',seasons:['sp','su','fa','wi'],tips:['Trim once a year in late summer with loppers — not shears','Annual trimming keeps size in check','Excellent wildlife cover','Berries are toxic — worth knowing']},
+'forsythia':{em:'💛',name:'Forsythia / Plum',latin:'Possibly Prunus spp.',desc:'Drops plums in late summer — likely a plum tree. Confirm ID when fully leafed out this spring.',sun:'Full sun',water:'Moderate',soil:'Adaptable',timing:'Blooms spring · fruits Jul–Sep if plum',seasons:['sp','su'],tips:['If plum: thin fruit in June for better size','Spring blossoms are early pollinator food','Let it grow naturally — minimal pruning','Confirm ID when fully leafed out this spring']},
+'angel-bells':{em:'🔔',name:'Angel Bells',latin:'Possibly Heuchera / Campanula',desc:'On the left side of Terrace 4. Beautiful bell-shaped flowers, shade tolerant, adds color to the lower terrace.',sun:'Partial to full shade',water:'Moderate',soil:'Well-drained, humus-rich',timing:'Blooms May–Jul',seasons:['sp','su'],tips:['One of the best plants for shady spots','Divide every 3 years when crowns lift','Deep purple/bronze foliage varieties look stunning if Heuchera','Hummingbirds visit the tubular bell-shaped flowers']},
+'provence-lavender':{em:'💜',name:'Provence Lavender',latin:'Lavandula x intermedia Provence',
+  desc:'Three Provence lavender plants on Terrace 4 — two thriving, one struggling. Provence is a classic hybrid lavender known for long flower spikes and intense fragrance. From Home Depot.',
+  sun:'Full sun preferred — late morning/afternoon sun here is adequate but not ideal',
+  water:'Every 6–7 days — lavender hates wet feet. Your sandy base soil is good but added amendments may be holding more moisture than lavender likes.',
+  soil:'Sandy with amendments — lean back on amendments around lavender. Top-dress with grit or coarse sand instead of compost.',
+  timing:'Blooms Jun–Aug',seasons:['su'],
+  tips:[
+    'Check the struggling plant — make sure crown is at soil level, not buried, and no mulch touching the stem',
+    'Prune by 1/3 after flowering — never cut into old woody growth below green leaves',
+    'Do not fertilize — rich soil makes lavender leggy with fewer flowers',
+    'If struggling plant does not recover by May, replace with another Provence start from a nursery',
+    'Provence is one of the most fragrant lavenders — harvest just as buds open for best scent',
+    'Top-dress with pea gravel around the crown — keeps moisture away from the stem base'
+  ]
+},
+'lavender-lower':{em:'💜',name:'Lavender (Lower)',latin:'Lavandula angustifolia',desc:'Existing on Terrace 4 along the fence. Most sheltered lavender in the garden.',sun:'Full sun',water:'Low — good drainage essential',soil:'Well-drained, lean',timing:'Blooms Jun–Aug',seasons:['su'],tips:['Prune after flowering','Leggy? Harder prune in early spring rejuvenates it','Near fence gets good reflected warmth','Three lavenders across terraces create a lovely thread through the garden']},
+'bok-choy':{em:'🥬',name:'Bok Choy',latin:'Brassica rapa (Chinensis)',desc:'New addition to Terrace 4. Fast-maturing, ideal for the slightly shadier lower terrace.',sun:'Partial to full sun',water:'Consistent moisture',soil:'Rich, fertile',timing:'Plant now · harvest 30–60 days',seasons:['sp','fa'],tips:['Baby bok choy at 6 inches is most tender','Two sowings: spring now + August for fall','Slugs love it — copper tape or bait around young plants','Shadier lower terrace suits it — less bolting']},
+'plum-tree':{em:'🌸',name:'Plum Trees (~6 total)',latin:'Prunus spp.',desc:'Multiple plum trees scattered throughout — left side of all terraces and on the main lawn. Spring blossoms are spectacular.',sun:'Full sun',water:'Moderate',soil:'Well-drained',timing:'Blooms Mar–Apr · fruits Jul–Sep',seasons:['sp','su'],tips:['Thin fruit in June for better size — remove every other small fruit','Spring blossoms are critical early pollinator food','Minimal pruning needed — remove dead wood only','Clean up fallen fruit promptly — attracts wasps and yellow jackets']},
+'flowering-quince':{em:'🔴',name:'Flowering Quince',latin:'Chaenomeles speciosa',desc:'Scarlet blooms on bare stems in early spring near the Angel Bells. One of the earliest flowering shrubs in your garden.',sun:'Full to partial sun',water:'Low once established',soil:'Adaptable — very tough',timing:'Blooms Feb–Apr',seasons:['wi','sp'],tips:['Prune after flowering — blooms on old wood','Can be espaliered against fence','Sometimes produces small tart quince — good for jelly','One of the toughest, lowest-maintenance shrubs you can grow']},
+'dianthus-front':{em:'💗',name:'Dianthus',latin:'Dianthus spp.',
+  desc:'Newly planted in the oval patch — dianthus adds a lovely cottage-garden feel with its fringed pink flowers and spicy clove-like fragrance. Prefers the sunnier right side of the bed near the house.',
+  sun:'Full to partial sun — place on the sunnier right side of the oval patch',
+  water:'Moderate — water when soil feels dry an inch down. Your moist soil here may be slightly too wet; ensure good drainage around the crown.',
+  soil:'Prefers well-drained soil — the silty wet soil of the oval patch may need some grit added near the plant crown to prevent rot',
+  timing:'Blooms May–Sep',seasons:['sp','su','fa'],
+  tips:[
+    'Plant on the sunnier drier right side near the house — less risk of crown rot in wet soil',
+    'Deadhead spent flowers constantly for continuous blooming all summer',
+    'Note: dianthus sap can cause contact dermatitis — wear gloves when handling',
+    'Divide every 2–3 years when clumps get crowded',
+    'Excellent cut flower — harvest when half the flowers on a stem are open'
+  ]
+},
+'hornwort':{em:'🌿',name:'Hornwort',latin:'Anthriscus sylvestris or Ceratophyllum',
+  desc:'Growing in the oval patch — if this is Cow Parsley (Anthriscus sylvestris) it has feathery ferny leaves and white umbel flowers in spring. Confirm ID as it can be confused with invasive species.',
+  sun:'Partial shade — thrives in the shadier left side of the oval patch',
+  water:'Low to moderate',soil:'Adaptable — tolerates the moist silty soil well',
+  timing:'Blooms Apr–Jun',seasons:['sp'],
+  tips:[
+    'Confirm ID — cow parsley looks similar to several plants including invasive hogweed (which causes skin burns)',
+    'If it is cow parsley it is a native PNW plant and beneficial to pollinators',
+    'Let it self-seed in the shadier parts of the oval patch where ivy is being removed',
+    'The ferny foliage is beautiful even when not in flower'
+  ]
+},
+'delphinium':{em:'💙',name:'Delphinium',latin:'Delphinium elatum',desc:'Tall dramatic blue spires in your oval patch. Cottage garden classic.',sun:'Full to partial sun',water:'Consistent moisture',soil:'Rich, well-drained',timing:'Blooms May–Jul',seasons:['sp','su'],tips:['Stake early — reach 4–6ft and snap in wind','Deadhead for second bloom','Mulch roots to keep cool','Divide every 3 years']},
+'poppy-front':{em:'🌺',name:'Poppies',latin:'Papaver spp.',desc:'Self-seeding beauties in the oval patch — come back every year.',sun:'Full sun',water:'Low — drought tolerant',soil:'Average to poor',timing:'Blooms Apr–Jun',seasons:['sp','su'],tips:['Let seed pods dry for self-sowing','Direct sow only — hate root disturbance','Deadhead some, leave some for next year','Deer leave them alone']},
+'bergamot':{em:'🌸',name:'Bergamot (Bee Balm)',latin:'Monarda spp.',desc:'Native wildflower beloved by Anna\'s hummingbirds. Aromatic, shaggy pink-red flowers.',sun:'Full to partial sun',water:'Moderate',soil:'Average to rich',timing:'Blooms Jun–Aug',seasons:['su'],tips:['Divide every 2–3 years — spreads vigorously','Watch for powdery mildew — space for airflow','Cut back hard after bloom for rebloom','Dried leaves make lovely herbal tea']},
+'salvia-front':{em:'💜',name:'Salvia',latin:'Salvia nemorosa',desc:'Long-blooming purple spires in the oval patch. Bees work it constantly.',sun:'Full sun',water:'Low to moderate',soil:'Well-drained',timing:'Blooms May–Sep',seasons:['sp','su','fa'],tips:['Shear by half after first flush for second bloom','Almost zero pest problems','Drought tolerant once established','Pairs beautifully with the lavender']},
+'iris':{em:'🪻',name:'Iris',latin:'Iris germanica',desc:'Classic bearded iris in the oval patch. Dramatic architectural spring flowers.',sun:'Full sun',water:'Low — drought tolerant',soil:'Well-drained, slightly alkaline',timing:'Blooms Apr–May',seasons:['sp'],tips:['Don\'t bury rhizomes — need to bake in sun','Divide every 3–4 years when crowded','Remove spent stalks; leave foliage until fall','Fan leaves add texture all season']},
+'yarrow-front':{em:'🌼',name:'Yarrow',latin:'Achillea millefolium',desc:'Indigenous to PNW and an excellent ivy replacement.',sun:'Full sun',water:'Very low',soil:'Poor to average — lean',timing:'Blooms Jun–Sep',seasons:['su','fa'],tips:['Don\'t amend soil — too rich = floppy','Divide spring every 2–3 years','Feathery foliage smells amazing when crushed','Best plant for replacing ivy']},
+'echinacea':{em:'🌸',name:'Echinacea (Coneflower)',latin:'Echinacea purpurea',desc:'Native, drought tolerant, beloved by bees and goldfinches. Perfect ivy replacement.',sun:'Full sun',water:'Low once established',soil:'Average, well-drained',timing:'Blooms Jul–Sep',seasons:['su','fa'],tips:['Leave seed heads — goldfinches eat them all winter','Don\'t deadhead if you want self-seeding','Very slow first year — don\'t give up','Combines beautifully with yarrow']},
+'succulent-front':{em:'🌵',name:'Succulents',latin:'Various',
+  desc:'Growing in the shrub line along the house wall — the dry, sheltered conditions here are actually ideal for succulents. Protected from heavy rain by the roof overhang.',
+  sun:'Full sun',water:'Very low — water only if soil is completely dry',soil:'Well-drained, lean',timing:'Year-round',seasons:['sp','su','fa','wi'],
+  tips:['The roof overhang actually benefits succulents — they hate sitting in winter rain','Do not overwater — this is the most common way to kill succulents in PNW','In a hard freeze, cover with frost cloth overnight','Great low-maintenance gap filler in this dry spot']
+},
+'lavender-front':{em:'💜',name:'Lavender (Shrub Line)',latin:'Lavandula angustifolia',desc:'Shrub line lavender along the house wall. Drought tolerant, fragrant, beloved by bees.',sun:'Full sun',water:'Low — do not overwater',soil:'Well-drained, lean',timing:'Blooms Jun–Aug',seasons:['su'],tips:['Prune ⅓ after flowering — never cut woody growth','Needs good air circulation','Harvest as buds begin to open for best fragrance','One of the best shrubs for Zone 9a']},
+'hyacinth':{em:'💜',name:'Hyacinth',latin:'Hyacinthus orientalis',desc:'Spring bulbs with intoxicating fragrance. First signs of spring in the shrub line.',sun:'Full to partial sun',water:'Moderate during growth, dry summer',soil:'Well-drained',timing:'Blooms Mar–Apr',seasons:['sp'],tips:['Let foliage die back completely — bulbs recharging','Plant 6" deep, pointed end up','May bloom less intensely after year 1 — normal','Pair with late-season plants to fill dormancy gap']},
+'winter-creeper':{em:'🌿',name:'Winter Creeper',latin:'Euonymus fortunei',desc:'Evergreen shrubs flanking the front door. Year-round structure.',sun:'Full sun to full shade',water:'Low once established',soil:'Adaptable',timing:'Evergreen year-round',seasons:['sp','su','fa','wi'],tips:['Can spread aggressively — trim edges annually','Berries toxic to dogs — be aware','Scale insects possible — check leaf undersides','Can be pruned tidy or left to sprawl']},
+'day-lily':{em:'🌼',name:'Day Lily',latin:'Hemerocallis',desc:'Cheerful pollinator plant in the shrub line. Very low maintenance, comes back stronger every year.',sun:'Full to partial sun',water:'Low to moderate',soil:'Adaptable',timing:'Blooms Jun–Aug',seasons:['su'],tips:['Divide every 3–4 years for best blooming','Deadhead for tidier look','Remove dead foliage in late fall','Most pest-resistant plant you can grow']},
+'rhododendron':{em:'⚠️',name:'Rhododendron',latin:'Rhododendron spp.',desc:'Struggling in the worst spot — most reflected heat, furthest from moisture. Needs rescue now.',sun:'Partial shade preferred',water:'Deep soak 2×/week — not surface sprinkle',soil:'Acidic, well-drained, humus-rich',timing:'Blooms Apr–May',seasons:['sp'],tips:['Deep soak 2× per week — critical','Pine bark acidic mulch ring around base NOW','EB Stone acid fertilizer scratched in lightly','No improvement by May → consider moving to shadier spot']},
+'hyacinth-boulder':{em:'💜',name:'Hyacinths (Boulder Strip)',latin:'Hyacinthus orientalis',desc:'Tucked between boulders along cedar fence. Pop up every spring.',sun:'Full sun to partial shade',water:'Low — dry summer is fine',soil:'Well-drained (boulder gaps = natural drainage)',timing:'Blooms Mar–Apr',seasons:['sp'],tips:['Self-naturalize between rocks — no care needed','Add a few bulbs each fall to thicken display','Dry summer conditions suit them perfectly','Deer-resistant and come back reliably']},
+'leeks':{em:'🧅',name:'Leeks',latin:'Allium porrum',
+  desc:'Growing in the Sunny Edibles bed. Hardy through winter, leeks provide harvests when little else is producing. The loamy soil in this bed is ideal.',
+  sun:'Full sun — your 8hr morning sun is perfect',
+  water:'Every 3–4 days — water deeply at the base. Your bed retains moisture well so check soil 2 inches down before watering again.',
+  soil:'Your loamy rocky soil is excellent for leeks — deep, fertile, moisture-retentive. Work in a handful of compost when planting.',
+  timing:'Plant now · harvest Oct–Feb',
+  seasons:['fa','wi'],
+  tips:[
+    'Plant deep in a hole or trench — bury the stem to blanch the white part. More white stem = better eating.',
+    'Hill soil up around the stems every few weeks as they grow to keep blanching the white section',
+    'Harvest when stems are finger-thick or larger — no need to pull all at once, harvest as needed',
+    'Leave some in the ground all winter — perfectly hardy in Zone 9a and they sweeten with cold',
+    'Feed with nitrogen-rich liquid fertilizer every 3–4 weeks through summer',
+    'Mulch around the base in fall to keep soil workable and roots insulated through winter'
+  ]
+},
+'ferns':{em:'🌿',name:'Ferns',latin:'Polystichum munitum (likely)',
+  desc:'Growing in the Ivy + Ferns corner — likely native sword ferns, which are one of the most common and beautiful understory plants in PNW gardens. They thrive in exactly the shaded, moist conditions of this corner.',
+  sun:'Shade to deep shade — perfect in this corner',
+  water:'Low once established — PNW rainfall usually sufficient. Water during dry summers if fronds start to droop.',
+  soil:'Humus-rich, moist — the ivy corner likely has good accumulated leaf litter which ferns love',
+  timing:'Evergreen — beautiful year-round',
+  seasons:['sp','su','fa','wi'],
+  tips:[
+    'Remove old brown fronds in late winter (Feb–Mar) just before new fiddleheads emerge — makes room for fresh growth',
+    'Never remove all fronds at once — the plant needs some to photosynthesize',
+    'Fiddleheads in spring are a beautiful sign — the tightly coiled new fronds unfurl over 2–3 weeks',
+    'Encourage ferns over ivy — as you gradually remove ivy, ferns will spread to fill the gaps naturally',
+    'Divide large clumps in fall and replant divisions in other shady spots around the garden',
+    'Native sword fern provides excellent wildlife habitat — birds nest in the dense clumps'
+  ]
+},
+'ivy':{em:'🌿',name:'English Ivy',latin:'Hedera helix',
+  desc:'Very established in the bottom right corner — ivy has been here a long time and the tree has it growing up the trunk. English ivy is invasive in PNW and can harm trees by adding weight.',
+  sun:'Full shade to partial sun',water:'Very low once established',soil:'Adaptable — thrives in almost anything',timing:'Evergreen year-round',seasons:['sp','su','fa','wi'],
+  tips:['The ivy climbing the tree trunk is worth monitoring — cut it at the base of the trunk in a ring to gradually kill the climbing portion without disturbing the ground ivy','English ivy is on the King County noxious weed watch list','Replace gradually with native sword fern or native ginger as you remove ivy sections','Do not compost ivy — it can root from cuttings']
+},
+'spanish-bluebell':{em:'💙',name:'Spanish Bluebells',latin:'Hyacinthoides hispanica',
+  desc:'Growing within the ivy and ferns in the bottom right corner. Spanish bluebells are beautiful but invasive in PNW — they hybridize with native bluebells and are very hard to eradicate once established.',
+  sun:'Partial to full shade',water:'Low',soil:'Adaptable',timing:'Blooms Apr–May',seasons:['sp'],
+  tips:['Monitor spread carefully — dig out bulbs if they appear in new areas','Do not compost the bulbs — they will regrow','The clump in the corner is likely fine to leave — just prevent spread beyond that area','Beautiful spring display but best contained to where it already is']
+},
+'unknown-tree':{em:'🌸',name:'Tree (ID TBD)',latin:'Possibly Prunus spp.',
+  desc:'The tree in the bottom right corner with ivy growing up the trunk. Based on the photos it appears to have pink/white spring blossoms — possibly a cherry or plum, same as the backyard trees. The ivy on the trunk should be gradually removed.',
+  sun:'Full sun',water:'Moderate',soil:'Adaptable',timing:'Blooms spring',seasons:['sp'],
+  tips:['Cut ivy at the base of the trunk in a ring — let the cut ivy die and fall off naturally over 1–2 years','Do not pull ivy off the trunk — can damage bark','ID the tree when in full bloom to confirm species','If it is a cherry or plum, it will drop fruit/blossoms — clean up promptly']
+},
+'snap-peas-front':{em:'🫛',name:'Snap Peas (Boulder Strip)',latin:'Pisum sativum',desc:'Trained up the cedar fence in the boulder strip. Done by July.',sun:'Full to partial sun',water:'Moderate, consistent',soil:'Average, well-drained',timing:'Plant now · harvest May–Jun',seasons:['sp'],tips:['Keep picking — more you pick, more produce','Deep soaking 2×/week best','Fix nitrogen into soil','Follow with nasturtiums or beans after July']},
+};
+
+const ZONES={
+'sunny-edibles':{em:'🫛',name:'Sunny Edibles',
+  sun:'Full sun — 8 hrs morning sun until about 2pm',
+  water:'Retains moisture well — water deeply every 2–3 days rather than daily shallow watering',
+  soil:'Loamy but rocky, dark brown, drains well but holds moisture — ideal for most edibles',
+  desc:'This bed gets morning sun through early afternoon — great for cool-season edibles and crops that appreciate some afternoon shade relief. The loamy rocky soil drains well while retaining enough moisture. Currently growing snap peas with bamboo stick support, and leeks.',
+  plants:['snap-peas','leeks'],
+  suggestions:[
+    {name:'Nasturtiums', timing:'now', when:'Mar–Apr',
+     why:'Direct sow right now along the edges — they spill over beautifully, thrive in your loamy soil, and the flowers and leaves are edible. Prefer poor soil so no amendment needed.',
+     variety:'Empress of India (compact, deep red) or Alaska (variegated leaves, good for edging)'},
+    {name:'Cilantro', timing:'now', when:'Mar–May',
+     why:'Cool season herb that does well in your morning-sun bed. Bolts in heat so the afternoon shade relief here actually extends your harvest window vs a sunnier spot.',
+     variety:'Slow Bolt is the one to get — specifically bred to resist bolting in spring warmth'},
+    {name:'Bush Beans', timing:'soon', when:'May–Jun',
+     why:'Perfect follow-on after snap peas finish in July. Bush beans fix nitrogen just like peas, love full sun, and your loamy soil produces excellent pods. No staking needed.',
+     variety:'Provider (reliable, early, disease resistant) or Blue Lake 274 (classic, heavy producer)'},
+    {name:'Bok Choy', timing:'soon', when:'Apr–May',
+     why:'Baby bok choy does well in this bed — harvest in 30 days. The slight afternoon shade here actually helps it avoid bolting. Your moisture-retentive soil is ideal.',
+     variety:'Shanghai (mild, tender) or Toy Choi (baby size, harvest whole at 6 inches)'},
+    {name:'Pole Beans', timing:'soon', when:'May–Jun',
+     why:'Your bamboo sticks are already there — pole beans will climb them happily after peas finish. More productive than bush beans per square foot, great for vertical growing.',
+     variety:'Rattlesnake (heat tolerant, purple-streaked pods) or Kentucky Wonder (classic, prolific)'},
+    {name:'Winter Squash', timing:'later', when:'Jun',
+     why:'Plant one squash start in late June — it will sprawl and produce through fall. Your loamy soil is ideal. Let it run along the fence edge.',
+     variety:'Delicata (compact vines, stores well) or Spaghetti Squash (easy, productive)'}
+  ]
+},
+'flower-bed':{
+  em:'🌸', name:'Flower Bed',
+  sun:'Full sun until 1–2pm — cherry tree creates dappled shade toward center of the bed',
+  water:'Every 3–4 days — drier than Sunny Edibles, cherry tree draws moisture. Check 2 inches down before watering.',
+  soil:'Drier, less loamy, less rocky than other beds. Drains faster — good drainage but needs more attention in dry spells.',
+  timing:'Succession planting spring through summer',
+  desc:'Terrace 1 center — under the cherry tree. Tulips, French lavender, icicle plant, and succession annuals for color all season. Cherry tree gives gentle dappled shade toward center.',
+  plants:['tulips','french-lavender','icicle-plant','ca-poppy','calendula','chamomile','agastache','cherry-tree'],
+  suggestions:[
+    {name:'Salvia nemorosa', timing:'now', when:'Mar–Apr',
+     why:'Takes over as tulips fade in May. Long purple spikes bridge spring to summer, loves the drier conditions in this bed.',
+     variety:'Caradonna (deep purple, very upright) or May Night (classic, reliable)'},
+    {name:'Yarrow', timing:'now', when:'Mar–Apr',
+     why:'Indigenous to PNW, extremely drought tolerant — ideal for this drier bed. Flat flower heads are pollinator landing pads.',
+     variety:'Achillea Galaxy Series (warm colors) or Moonshine (bright yellow, very reliable)'},
+    {name:'Echinacea', timing:'now', when:'Mar–Apr',
+     why:'Native, drought tolerant — perfect for drier conditions. Bees and goldfinches love it, pairs beautifully with the existing lavender.',
+     variety:'Magnus (large pink, very reliable) or White Swan (elegant, great for pollinators)'},
+    {name:'Cosmos', timing:'soon', when:'Apr–May',
+     why:'Direct sow in spring — thrives in drier, less fertile soil. Self-seeds and returns every year filling gaps as tulips go dormant.',
+     variety:'Sensation Mix (tall, airy) or Sonata (compact, good for front of bed)'},
+    {name:'Rudbeckia', timing:'soon', when:'Apr–May',
+     why:'Loves full morning sun and tolerates drier conditions well. Blooms summer through fall after spring flowers fade.',
+     variety:'Goldsturm (classic, spreads into a clump over time)'}
+  ]
+},
+'borage-corner':{
+  em:'🌀', name:'Borage Corner',
+  sun:'Harshest sun in the garden — full sun 8am to ~3pm with no relief. Plants here need to be drought and heat tolerant.',
+  water:'Every 4–5 days — this is the driest bed. Sandy and rocky so water drains through fast. Deep watering is key — surface watering evaporates too quickly here.',
+  soil:'Driest and sandiest in the garden — lots of rocks, added soil helps but it drains very fast. Gets more loamy if you dig deeper. Great for Mediterranean and drought-tolerant plants.',
+  timing:'Self-seeding hub — largely self-manages year to year',
+  desc:'Terrace 1 right — curved concrete block bed by the fence. Borage reseeded strongly here and will self-seed every year. Strawberries are growing here too. The driest, sunniest bed in the garden — suits drought-tolerant plants perfectly.',
+  plants:['borage','nasturtium','penstemon','strawberry'],
+  suggestions:[
+    {name:'Lavender', timing:'now', when:'Mar–Apr',
+     why:'This dry, sandy, full-sun bed is literally perfect lavender habitat — better than any other bed in the garden. It would thrive here with zero extra care once established.',
+     variety:'Hidcote (compact, deep purple) or Grosso (large, very fragrant, most drought tolerant)'},
+    {name:'Thyme', timing:'now', when:'Mar–Apr',
+     why:'Loves dry sandy soil and full sun — will spread as a low ground cover between other plants. Edible, fragrant, and pollinators love the tiny flowers.',
+     variety:'Thymus vulgaris (common, edible) or Elfin Thyme (very low spreading, great between stones)'},
+    {name:'Sedum', timing:'now', when:'Mar–Apr',
+     why:'Virtually indestructible in sandy dry soil. Fleshy leaves store water, thrives in the harshest sun. Great structural plant that looks good all year.',
+     variety:'Autumn Joy (tall, great fall color) or Dragon Blood (low spreading, red-tinged leaves)'},
+    {name:'California Poppy', timing:'now', when:'Mar–Apr',
+     why:'Native to dry rocky slopes — this bed mimics its natural habitat. Direct sow now and let it self-seed for years.',
+     variety:'Just the straight species — it will naturalize perfectly here'},
+    {name:'Oregano', timing:'now', when:'Mar–Apr',
+     why:'Mediterranean herb that loves dry sandy soil and harsh sun. Spreads gently, edible, and bees absolutely love the flowers in summer.',
+     variety:'Greek Oregano (most flavorful) or Kent Beauty (ornamental, beautiful drooping flowers)'}
+  ]
+},
+'greens-bed':{
+  em:'🥬', name:'Leafy Greens',
+  sun:'Morning sun only — shade arrives around 12–1pm. Coolest shadiest bed on Terrace 2, which is why greens thrive here.',
+  water:'Every 2–3 days — loamy soil holds water well. Less frequent watering than other beds. Check 2 inches down before watering.',
+  soil:'Loamy, not many rocks, holds moisture well — best soil on the terrace for water-loving greens.',
+  timing:'Year-round production in Zone 9a',
+  desc:'Terrace 2 left — morning sun until noon, then afternoon shade relief. Loamy moisture-retentive soil. Your most reliable food-producing bed.',
+  plants:['swiss-chard','kale','sorrel','spinach','arugula'],
+  suggestions:[
+    {name:'Miners Lettuce', timing:'now', when:'Mar–May',
+     why:'Native to PNW, loves morning-sun shade exactly like this bed. Mild succulent flavor, self-seeds once established.',
+     variety:'Claytonia perfoliata — straight species naturalizes perfectly'},
+    {name:'Mustard Greens', timing:'now', when:'Mar–Apr',
+     why:'Fast-growing cool season green. Bolt-resistant in afternoon shade. Harvest young for salads or older for cooking.',
+     variety:'Red Giant (beautiful color, mild) or Southern Giant Curled (productive)'},
+    {name:'Pak Choi', timing:'now', when:'Mar–May',
+     why:'Cool season brassica that loves afternoon shade — prevents bolting. Harvest baby size in 30 days.',
+     variety:'Toy Choi (baby, 30 days) or Shanghai Green (tender, mild)'},
+    {name:'Perpetual Spinach', timing:'now', when:'Mar–Apr',
+     why:'Much more bolt resistant than regular spinach. Will produce for months in your shaded cool bed.',
+     variety:'Perpetual Spinach Chard — more reliable than true spinach in warm spells'},
+    {name:'Chard (new colors)', timing:'now', when:'Mar–Apr',
+     why:'Since rainbow chard is your proven star here, adding new starts fills gaps left by bolting plants.',
+     variety:'Bright Lights (multi-color mix) or Fordhook Giant (extra productive)'}
+  ]
+},
+'raspberry-circle':{em:'🫐',name:'Raspberry Circle',plants:['raspberry','strawberry','alyssum'],desc:'Terrace 2 center — round curved bed. Two raspberry canes leafing out.'},
+'lavender-run':{
+  em:'💜', name:'Lavender Run',
+  sun:'Good sun most of the day — some shade passes through but generally sunny enough for lavender to thrive.',
+  water:'Every 5–7 days — lavender prefers drier conditions. Do not overwater. Sandy-loamy mix drains reasonably well.',
+  soil:'Middle ground between sandy and loamy — brown soil, drains reasonably. Grass competes heavily here so regular weeding is important.',
+  timing:'Blooms Jun–Aug',
+  desc:'A continuous strip of Grosso French lavender running across Terrace 2. One of the signature features of the garden. Grass competition is the main challenge — needs regular weeding to let lavender establish fully.',
+  plants:['lavender-grosso'],
+  suggestions:[
+    {name:'Weeding', timing:'now', when:'Now — ongoing',
+     why:'Grass is your biggest competition here. Pull grass around lavender crowns now before it gets established. A stirrup hoe works great along the strip.',
+     variety:'No product needed — just consistent weeding every 2–3 weeks through spring'},
+    {name:'Salvia Black & Blue', timing:'now', when:'Mar–Apr',
+     why:'Plant at the back of the strip against the wall — tall blue spikes complement the lavender beautifully and extend the hummingbird season into fall.',
+     variety:'Salvia guaranitica Black & Blue — the darkest, most dramatic variety'},
+    {name:'Alyssum', timing:'now', when:'Mar–Apr',
+     why:'Plant along the front lip of the lavender strip — will spill over the wall edge and fill in while lavender fills out. Honey-scented, bee magnet.',
+     variety:'Snow Crystal (most fragrant) or Carpet of Snow (great spreader)'},
+    {name:'Penstemon', timing:'now', when:'Mar–Apr',
+     why:'Native, drought tolerant — same water needs as lavender. Hummingbird magnet that bridges the gap when lavender is not blooming.',
+     variety:'Penstemon heterophyllus (native PNW, blue-purple) or Husker Red (dramatic dark foliage)'}
+  ]
+},
+'veg-right':{
+  em:'🥦', name:'Right Veg Bed',
+  sun:'Sunny most of the day — especially intense in summer. One of the hottest beds on the terrace.',
+  water:'Every 2 days in summer — soil does not retain well, heats up and loses moisture quickly. Do not let dry out when tomatoes and peppers are fruiting.',
+  soil:'Mix of sandy and loamy — not great at retaining water. Add compost before summer planting to improve moisture retention.',
+  timing:'Cool season brassicas now → jalapeños, peppers, tomatoes late April',
+  desc:'Terrace 2 right — the main vegetable production bed. Cauliflower and Brussels sprouts now. Jalapeños, green peppers, and cherry tomatoes in summer. Nasturtium and calendula grow here as companions.',
+  plants:['cauliflower','brussels','tomatoes','peppers','jalapenos','nasturtium','calendula'],
+  suggestions:[
+    {name:'Compost Amendment', timing:'now', when:'Before summer planting',
+     why:'Working in 2–3 inches of compost before April planting dramatically improves moisture retention and reduces watering frequency in this hot bed.',
+     variety:'EB Stone Sure Start or any good garden compost'},
+    {name:'Straw Mulch', timing:'soon', when:'Apply in April',
+     why:'2-inch mulch layer dramatically reduces water loss once summer heat arrives. Critical for this bed given how fast it dries out.',
+     variety:'Straw mulch — best choice for vegetable beds'},
+    {name:'Zucchini', timing:'soon', when:'May',
+     why:'One plant produces more than you can eat. Loves full sun and heat — perfect for this bed in summer.',
+     variety:'Costata Romanesco (Italian heirloom, great flavor) or Black Beauty (classic, prolific)'},
+    {name:'Basil', timing:'soon', when:'With tomatoes late April',
+     why:'Classic tomato companion — plant at the base of each tomato. Repels pests and said to improve flavor.',
+     variety:'Genovese (best for cooking) or Siam Queen (Thai basil, beautiful purple flowers)'}
+  ]
+},
+'goldenrod-yarrow':{
+  em:'🌼', name:'Native Pollinators',
+  sun:'Mostly full day sun — one of the more exposed beds in the garden.',
+  water:'Every 3–4 days — retains better than Right Veg Bed but can feel dry at times. Check soil before watering.',
+  soil:'Silty and brown — middle of the road. Better moisture retention than the upper sandy beds but still needs attention in dry spells. Heavy grass competition.',
+  timing:'Yarrow Jun–Sep · Goldenrod Aug–Oct · Sunflowers Aug–Sep',
+  desc:'Terrace 3 left — your dedicated native pollinator bed. Yellow yarrow, fire red yarrow, and goldenrod are the anchors. Sunflowers pop up in fall. Lots of grass to pull — keep at it through spring and the perennials will fill in and suppress it naturally over time.',
+  plants:['goldenrod','yarrow-yellow','yarrow-red'],
+  suggestions:[
+    {name:'Weeding', timing:'now', when:'Now — every 2 weeks through spring',
+     why:'Grass is overwhelming this bed right now. Pull grass around plant crowns carefully — once yarrow and goldenrod fill in they will naturally suppress it. A stirrup hoe works great between plants.',
+     variety:'No product needed — consistent manual weeding is the key this season'},
+    {name:'Echinacea', timing:'now', when:'Mar–Apr',
+     why:'Native, drought tolerant, and one of the best pollinator plants for PNW. Would fill in beautifully with your yarrow and goldenrod. Bees and goldfinches love it.',
+     variety:'Magnus (large pink, very reliable) or Prairie Splendor (compact, good for crowded beds)'},
+    {name:'Rudbeckia (Black-eyed Susan)', timing:'now', when:'Mar–Apr',
+     why:'Native to North America, thrives in silty soil with full sun. Blooms when goldenrod blooms — late summer pollinator feast.',
+     variety:'Goldsturm (reliable, spreads slowly into a clump)'},
+    {name:'Agastache', timing:'now', when:'Mar–Apr',
+     why:'Hummingbird magnet that bridges the gap between yarrow and goldenrod seasons. Drought tolerant once established — fits your soil conditions well.',
+     variety:'Blue Fortune (very hardy, long blooming) or Black Adder (dramatic dark stems)'},
+    {name:'Sunflowers', timing:'soon', when:'May',
+     why:'They already come up here naturally — encourage it. Direct sow in May for fall blooms. Let them self-seed for free plants every year.',
+     variety:'Mammoth (classic tall) or Autumn Beauty (multi-color, great for pollinators)'}
+  ]
+},
+'lower-center':{
+  em:'💜', name:'Provence Lavender',
+  sun:'Late morning to afternoon sun — not as much as upper terraces.',
+  water:'Every 5–7 days — sandy soil, but you have added amendments which may affect drainage. Do not overwater — root rot is the risk.',
+  soil:'Sandy with amendments added — drains reasonably but the amendments have changed the texture. Siltier feel than pure sand.',
+  timing:'Blooms Jun–Aug',
+  desc:'Three Provence lavender plants from Home Depot — two are doing well, one is struggling. Sandy base soil with amendments added. Also growing bok choy here.',
+  plants:['provence-lavender','bok-choy'],
+  suggestions:[
+    {name:'Check the struggling lavender', timing:'now', when:'Now',
+     why:'If one of three is struggling it may be getting too much water from the amendments holding moisture, or planted too deep. Check the crown is at soil level and pull back any mulch from the stem.',
+     variety:'If it does not recover by May consider replacing with another Provence start'},
+    {name:'Reduce amendments going forward', timing:'now', when:'Note for future',
+     why:'Lavender strongly prefers lean, well-drained soil. Adding rich amendments actually hurts it. Going forward, top-dress with grit or coarse sand instead of compost around lavender crowns.',
+     variety:'Pea gravel mulch around lavender crowns is ideal — keeps moisture away from crown'}
+  ]
+},
+'right-bed':{
+  em:'🌿', name:'Assorted Bed',
+  sun:'Late morning to afternoon — shaded by nearby plum trees so less intense than upper terraces.',
+  water:'Does not drain as well — siltier soil holds water more. Water every 4–5 days and check before watering.',
+  soil:'Siltier — holds water better than sandy beds. More clay-like feel. Less drainage than the Provence lavender bed next to it.',
+  timing:'Mixed — herbs and greens year-round',
+  desc:'Terrace 4 right assorted bed — chamomile, stevia, oregano, and kale currently growing here. Shaded by plum trees. Siltier soil that holds water well.',
+  plants:['chamomile','stevia','arugula','kale'],
+  suggestions:[
+    {name:'Oregano', timing:'now', when:'Mar–Apr',
+     why:'Already grew here before — oregano loves the afternoon shade from plum trees and silty soil. Perennial so it will return every year once established.',
+     variety:'Greek Oregano (most flavorful for cooking) or Kent Beauty (ornamental, beautiful drooping flowers)'},
+    {name:'Mint', timing:'now', when:'Mar–Apr',
+     why:'Loves the shadier, moister conditions here. Plant in a container sunk into the bed to prevent it taking over.',
+     variety:'Spearmint (mild, great for tea) or Chocolate Mint (surprising dessert flavor)'},
+    {name:'Shade Flowers', timing:'now', when:'Mar–Apr',
+     why:'The plum tree shade makes this a good spot for partial-shade flowers — something different from the sun-loving plants on upper terraces.',
+     variety:'Foxglove (tall, dramatic, hummingbirds love it) or Astilbe (feathery, beautiful in shade)'}
+  ]
+},
+'oval-patch':{
+  em:'🌸', name:'Oval Patch',
+  sun:'Afternoon sun — starts around 12–1pm, lasts 4–5 hours. Near the house/right side gets more sun; near the street/left is more shaded by the fence.',
+  water:'Retains water well — stays wet. Less watering needed here than most beds.',
+  soil:'Possibly silty — holds moisture well. Dark and damp toward the left/fence side.',
+  timing:'Spring blooms · summer color · ivy year-round',
+  desc:'Left of the walkway, bordered by the house at top, cedar fence on the left, and pathway on the right. Mix of established perennial flowers with ivy and Spanish bluebells throughout. Dianthus newly planted.',
+  plants:['delphinium','poppy-front','bergamot','salvia-front','iris','dianthus-front','hornwort'],
+  suggestions:[
+    {name:'Echinacea', timing:'now', when:'Mar–Apr',
+     why:'Would thrive in the afternoon sun on the right side of the bed near the house. Native, drought tolerant, long blooming. Fills in beautifully after poppies fade.',
+     variety:'Magnus (large pink) or White Swan (elegant, bees love it)'},
+    {name:'Yarrow', timing:'now', when:'Mar–Apr',
+     why:'Indigenous to PNW, tolerates the silty moist soil well. Spreads to fill ivy gaps. Great pollinator plant from summer into fall.',
+     variety:'Achillea millefolium (native white) or Paprika (warm red, dramatic)'},
+    {name:'Astilbe', timing:'now', when:'Mar–Apr',
+     why:'Loves the shadier wetter left side near the fence — exactly the conditions astilbe prefers. Feathery plumes in pink or white, beautiful against the fence.',
+     variety:'Fanal (deep red) or Bridal Veil (white, elegant)'},
+    {name:'Foxglove', timing:'now', when:'Mar–Apr',
+     why:'Tall dramatic spires that love partial shade and moist soil. Self-seeds reliably. Hummingbirds absolutely love the tubular flowers.',
+     variety:'Excelsior Hybrids (mixed colors) or Camelot Lavender (stunning soft purple)'},
+    {name:'Ivy removal (long-term)', timing:'later', when:'Fall',
+     why:'Gradually replacing ivy with the flowers above will dramatically improve this bed. Work in sections — front edge first, then inward over 2–3 seasons.',
+     variety:'Replace with low perennial ground covers as you clear each section'}
+  ]
+},
+'shrub-line':{
+  em:'🌿', name:'Shrub Line',
+  sun:'Late morning to late afternoon — good sun along the house wall, protected by the roof overhang from rain.',
+  water:'Needs frequent watering — very dry brown soil, almost picks up by hand. The roof overhang prevents rain reaching this bed. Water deeply 2–3x per week in summer.',
+  soil:'Very dry, brown, almost dusty — one of the driest spots in the garden due to roof overhang. Good for drought-tolerant plants.',
+  timing:'Year-round structure',
+  desc:'Right of walkway along the house wall, door to right. Left to right: Lavender → Succulents (jade + mix) → Tulip → Lavender → Winter Creeper → Day Lily → Winter Creeper → Rhododendron. The struggling rhododendron is at the far right end.',
+  plants:['lavender-front','succulent-front','tulips','winter-creeper','day-lily','rhododendron'],
+  suggestions:[
+    {name:'Relocate Rhododendron', timing:'now', when:'This spring',
+     why:'The far right end is the worst spot for rhododendron — maximum reflected heat, minimum moisture from the roof overhang. Moving it to a shadier backyard spot would likely save it.',
+     variety:'Move to lower terrace or under a tree in the backyard'},
+    {name:'More Succulents', timing:'now', when:'Mar–May',
+     why:'The dry roof-overhang conditions here are literally perfect for succulents — they get protection from heavy winter rain which is their main enemy in PNW. Expand the succulent section.',
+     variety:'Sedum spurium (spreading, colorful), Sempervivum (hens and chicks), or Echeveria (rosette form)'},
+    {name:'Lavender (expand)', timing:'now', when:'Mar–Apr',
+     why:'More lavender in the dry gap near the rhododendron would thrive here and is a much better fit than the struggling rhodo.',
+     variety:'Hidcote (compact, deep purple) — same as what you have, proven in this spot'},
+    {name:'Rosemary', timing:'now', when:'Mar–Apr',
+     why:'Loves dry sunny conditions along a warm house wall. Evergreen, edible, very low water. Would fill in beautifully after rhododendron is moved.',
+     variety:'Tuscan Blue (upright, culinary) or Prostratus (spreading, good for edges)'}
+  ]
+},
+'boulder-strip':{
+  em:'💜', name:'Hyacinth Boulder Strip',
+  sun:'Low — only a few hours of sun per day, blocked by fence and oval patch. Mostly shaded.',
+  water:'Retains water well — wet, loamy soil. Does not dry out quickly.',
+  soil:'Loamy, wet — the shadiest and moistest spot along the fence. Good for shade-tolerant bulbs.',
+  timing:'Blooms Mar–Apr · dormant summer',
+  desc:'Along the inside of the bottom fence — hyacinths tucked between boulders. Gets limited sun but the hyacinths thrive here, popping up reliably every spring. Loamy wet soil.',
+  plants:['hyacinth-boulder'],
+  suggestions:[
+    {name:'Snowdrops', timing:'now', when:'Plant bulbs now or in fall',
+     why:'Love the shady moist conditions here — one of the earliest spring flowers, blooming even before hyacinths. Would extend the spring display.',
+     variety:'Galanthus nivalis (common snowdrop) — very reliable naturalizer'},
+    {name:'Muscari (Grape Hyacinth)', timing:'now', when:'Fall bulb planting',
+     why:'Same conditions as regular hyacinth — shade tolerant, loves moist loamy soil. Beautiful blue-purple clusters that complement the hyacinths perfectly.',
+     variety:'Armeniacum (classic blue) or Album (white, elegant)'},
+    {name:'Native Ferns', timing:'now', when:'Mar–Apr',
+     why:'The shady moist conditions along the fence are ideal for native sword ferns. Would create a beautiful lush edge to the boulder strip year-round.',
+     variety:'Polystichum munitum (Western Sword Fern) — PNW native, zero care'}
+  ]
+},
+'street-edge':{em:'🌸',name:'Street Edge Oval',plants:['hyacinth'],desc:'Visible from street — reclaim opportunity from grass.'},
+'ivy-corner':{
+  em:'🌿', name:'Ivy + Ferns Corner',
+  sun:'Partial shade — shaded by tree and right fence',
+  water:'Low — ivy is drought tolerant once established',
+  soil:'Likely loamy under the ivy — well established bed',
+  timing:'Evergreen year-round',
+  desc:'Bottom right corner — English ivy, ferns, Spanish bluebells, and an unknown flowering tree (possibly cherry/plum). The ivy has colonized the tree trunk. Spanish bluebells are invasive in PNW — monitor spread.',
+  plants:['ivy','ferns','spanish-bluebell','unknown-tree'],
+  suggestions:[
+    {name:'Gradual ivy removal', timing:'later', when:'Fall',
+     why:'English ivy is invasive in PNW and can harm trees. Replace gradually with native ground cover.',
+     variety:'Native sword fern or wild ginger (Asarum caudatum)'},
+    {name:'Native Sword Fern', timing:'now', when:'Mar–Apr',
+     why:'Already growing here naturally. Zero care, beautiful year-round, truly PNW native.',
+     variety:'Polystichum munitum — the classic PNW native fern'}
+  ]
+},
+'street-lawn':{
+  em:'🌱', name:'Street Lawn',
+  sun:'Full sun — open, no shade',
+  water:'Low currently as grass',
+  soil:'Likely compacted — would benefit from aeration before converting to garden bed',
+  timing:'Future project',
+  desc:'Rectangular grass patch between sidewalk and street. Currently lawn but has great potential as a pollinator strip or lavender border.',
+  plants:[],
+  suggestions:[
+    {name:'Lavender Border', timing:'later', when:'Spring',
+     why:'Fragrant, zero maintenance once established, loved by bees. Looks intentional from the street.',
+     variety:'Hidcote (compact, deep purple, hardy Zone 9a)'},
+    {name:'Pollinator Strip', timing:'later', when:'Fall prep',
+     why:'Native low-growing plants require no mowing and attract beneficial insects.',
+     variety:'Yarrow, creeping thyme, and sedums — all drought tolerant'}
+  ]
+},
+};
+
+let currentView='map',currentYard='back';
+function switchYard(yard){
+  currentYard=yard;
+  document.querySelectorAll('.yard-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.yard-view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('tab-'+yard).classList.add('active');
+  document.getElementById('yard-'+yard).classList.add('active');
+  if(yard==='weeds'){
+    // Show weeds list, hide map/list toggle
+    document.querySelector('.view-toggle').style.visibility='hidden';
+    renderWeeds();
+  } else {
+    document.querySelector('.view-toggle').style.visibility='visible';
+    switchView(currentView,true);
+  }
+}
+function switchView(view,force){
+  currentView=view;
+  document.getElementById('vt-map').classList.toggle('active',view==='map');
+  document.getElementById('vt-list').classList.toggle('active',view==='list');
+  ['front','back'].forEach(yard=>{
+    const m=document.getElementById('map-'+yard);
+    const l=document.getElementById('list-'+yard);
+    if(m) m.style.display=(view==='map')?'block':'none';
+    if(l) l.style.display=(view==='list')?'block':'none';
+  });
+}
+function openPlant(id){
+  const p=P[id]; if(!p) return;
+  document.getElementById('m-em').textContent=p.em;
+  document.getElementById('m-name').textContent=p.name;
+  document.getElementById('m-latin').textContent=p.latin;
+  document.getElementById('m-desc').textContent=p.desc;
+  document.getElementById('m-sun').textContent=p.sun;
+  document.getElementById('m-water').textContent=p.water;
+  document.getElementById('m-soil').textContent=p.soil;
+  document.getElementById('m-timing').textContent=p.timing;
+  const sm={sp:'🌱 Spring',su:'☀️ Summer',fa:'🍂 Fall',wi:'❄️ Winter'};
+  const sc={sp:'s-sp',su:'s-su',fa:'s-fa',wi:'s-wi'};
+  document.getElementById('m-seasons').innerHTML=p.seasons.map(s=>`<span class="s-badge ${sc[s]}">${sm[s]}</span>`).join('');
+  document.getElementById('m-tips').innerHTML=p.tips.map(t=>`<li>${t}</li>`).join('');
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+let _lastZone = null;
+
+function openZone(id){
+  _lastZone = id;
+  const z=ZONES[id]; if(!z) return;
+  document.getElementById('back-btn').style.display='none';
+  document.getElementById('m-em').textContent=z.em;
+  document.getElementById('m-name').textContent=z.name;
+  document.getElementById('m-latin').textContent= z.sun ? 'Bed overview — tap a plant for individual care' : 'Tap a plant for full care info';
+  document.getElementById('m-desc').textContent=z.desc;
+  document.getElementById('m-sun').textContent=z.sun||'varies by plant';
+  document.getElementById('m-water').textContent=z.water||'varies by plant';
+  document.getElementById('m-soil').textContent=z.soil||'varies by plant';
+  document.getElementById('m-timing').textContent=z.timing||'see individual plants';
+  document.getElementById('m-seasons').innerHTML='';
+  let plantsHtml = z.plants.map(pid=>{
+    const pl=P[pid]; if(!pl) return '';
+    return `<li style="cursor:pointer;padding:8px 4px;border-bottom:1px solid rgba(106,136,72,0.12);" onclick="openPlantFromZone('${pid}','${id}')">
+      <span style="font-size:1.15rem;margin-right:8px;">${pl.em}</span>
+      <strong style="font-family:'Fraunces',serif;font-size:0.84rem;color:#4a3020;">${pl.name}</strong>
+      <span style="font-size:0.68rem;color:#6a8848;margin-left:6px;">tap for care →</span>
+    </li>`;
+  }).join('');
+  if(z.suggestions && z.suggestions.length){
+    const now = new Date();
+    const month = now.getMonth()+1; // 1-12
+    // Sort: 'now' first, then 'soon', then 'later'
+    const sorted = [...z.suggestions].sort((a,b)=>{
+      const rank = s => s.timing==='now' ? 0 : s.timing==='soon' ? 1 : 2;
+      return rank(a)-rank(b);
+    });
+    const badge = s => {
+      if(s.timing==='now') return `<span style="background:#d4a830;color:#fff;font-size:0.55rem;padding:2px 6px;border-radius:10px;margin-left:6px;font-weight:600;">PLANT NOW</span>`;
+      if(s.timing==='soon') return `<span style="background:#e8c870;color:#5a3800;font-size:0.55rem;padding:2px 6px;border-radius:10px;margin-left:6px;">SOON</span>`;
+      return `<span style="background:#e8e0d0;color:#7a6040;font-size:0.55rem;padding:2px 6px;border-radius:10px;margin-left:6px;">${s.when||'LATER'}</span>`;
+    };
+    plantsHtml += `<li style="padding:10px 4px 4px;list-style:none;">
+      <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:#b87020;margin-bottom:8px;font-weight:500;">💡 Could also grow here</div>
+      ${sorted.map(s=>`
+        <div style="padding:7px 0;border-bottom:1px solid rgba(184,112,32,0.12);">
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;">
+            <span style="font-size:0.82rem;font-weight:500;color:#5a3800;font-family:'Fraunces',serif;">${s.name}</span>
+            ${badge(s)}
+          </div>
+          <div style="font-size:0.72rem;color:#7a5820;margin-top:3px;line-height:1.4;">${s.why}</div>
+          ${s.variety ? `<div style="font-size:0.68rem;color:#9a7040;margin-top:2px;">Best variety: ${s.variety}</div>` : ''}
+        </div>
+      `).join('')}
+    </li>`;
+  }
+  document.getElementById('m-tips').innerHTML=plantsHtml;
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function openPlantFromZone(plantId, zoneId){
+  _lastZone = zoneId;
+  openPlant(plantId);
+  document.getElementById('back-btn').style.display='flex';
+}
+
+function goBackToZone(){
+  document.getElementById('back-btn').style.display='none';
+  if(_lastZone) openZone(_lastZone);
+}
+function closeModal(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';}
+function maybeClose(e){if(e.target===document.getElementById('overlay'))closeModal();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+switchView('map',true);
+
+const WEEDS = [
+  {
+    id:'fescue', name:'Fescue Grass', latin:'Festuca rubra / Schedonorus arundinaceus',
+    emoji:'🌾', color:'#c8d8a0', yours:true,
+    taxonId:119893,
+    where:'Main lawn — creeps into beds from the lawn edges',
+    looks:'Fine-bladed wiry grass (creeping red fescue) or coarser flat-bladed clumps (tall fescue). Forms dense spreading mats or upright clumps. Bright green and aggressive in spring.',
+    season:'Year-round · most aggressive Mar–May',
+    threat:'medium',
+    removal:['Pull when soil is moist — roots come out much more cleanly','Use a stirrup hoe along bed edges to cut it off before it spreads into beds','In lavender run and native pollinator bed this is your #1 priority right now','Mulch 2–3 inches thick after clearing to prevent regrowth','Do not compost seed heads — bag and bin them']
+  },
+  {
+    id:'japanese-knotweed', name:'Japanese Knotweed', latin:'Reynoutria japonica',
+    emoji:'🌿', color:'#d8e8b0', yours:true,
+    taxonId:82952,
+    where:'Main lawn bottom edge — confirmed in your garden',
+    looks:'Hollow bamboo-like stems with zigzag growth pattern. Large heart-shaped leaves 4–6 inches wide with a flat or slightly indented base. Creamy white flower clusters in late summer. Grows 6–10ft tall very fast.',
+    season:'Emerges Apr · most aggressive May–Sep',
+    threat:'high',
+    removal:['Class B noxious weed in King County — take it seriously','Cut stems to ground level every 2–3 weeks through summer — starves roots over 2–3 seasons','Never compost — even tiny stem fragments can regrow into new plants','Do NOT dig up — breaks and spreads roots, makes it much worse','Contact King County Noxious Weed Program for free advice: kingcountyweeds.com']
+  },
+  {
+    id:'creeping-buttercup', name:'Creeping Buttercup', latin:'Ranunculus repens',
+    emoji:'🌼', color:'#f0e8b0', yours:false,
+    taxonId:50907,
+    where:'Watch moist shaded areas — greens bed and lower terraces most at risk',
+    looks:'Low-growing with glossy 3-lobed leaves, often with pale mottled patches. Bright shiny yellow 5-petaled flowers. Spreads aggressively by runners (stolons) that creep along the soil surface and root at nodes.',
+    season:'Flowers Apr–Aug · spreads year-round',
+    threat:'high',
+    removal:['Pull by hand when soil is wet — trace each runner fully back to the crown','A daisy grubber is excellent for removing the central crown cleanly','Improve drainage in affected areas — buttercup thrives in compacted wet soil','Very persistent — expect to pull multiple times before it gives up','Heavy mulching after clearing prevents reestablishment']
+  },
+  {
+    id:'chickweed', name:'Common Chickweed', latin:'Stellaria media',
+    emoji:'🌱', color:'#d8f0d0', yours:false,
+    taxonId:53211,
+    where:'Most likely in greens bed and lower terraces — loves cool moist soil',
+    looks:'Low matted carpet of tiny oval leaves on thin stems. Small white star-shaped flowers with deeply notched petals that look like 10 petals but are actually 5. Stems have a single line of fine hairs running along one side.',
+    season:'Most active Oct–May · dies back in summer heat',
+    threat:'medium',
+    removal:['Edible — mild flavor good in salads. Pull young plants and eat them rather than bin.','Pull before it flowers or it drops thousands of tiny seeds','Easy to pull — very shallow roots come out cleanly in moist soil','Hoe in dry weather — cut stems dry out and die quickly','Thick fall mulch prevents it establishing over winter']
+  },
+  {
+    id:'bindweed', name:'Bindweed (Field)', latin:'Convolvulus arvensis',
+    emoji:'🌀', color:'#f8e8d8', yours:false,
+    taxonId:57282,
+    where:'Watch fence lines and disturbed soil — left fence line most at risk',
+    looks:'Vining weed with arrowhead-shaped leaves and small white or pink trumpet-shaped flowers identical to morning glory. Twines clockwise around other plants and fences. Can grow 6ft in a season. Roots go very deep.',
+    season:'Active May–Oct',
+    threat:'high',
+    removal:['Do NOT pull — breaks roots and each fragment regrows. Cut at soil level instead.','Cut every 2 weeks through summer — consistently starves the deep roots','Takes 2–3 seasons of cutting to significantly reduce','Never let it flower — seeds are viable for 50+ years in soil','Carefully unwrap from desirable plants — it strangles them']
+  },
+  {
+    id:'wild-geranium', name:'Herb Robert (Wild Geranium)', latin:'Geranium robertianum',
+    emoji:'🌸', color:'#f0d8e8', yours:true,
+    taxonId:76405,
+    where:'Confirmed in your garden — common in shaded spots and bed edges',
+    looks:'Ferny deeply divided leaves with a distinctive musty smell when crushed. Small pink 5-petaled flowers. Reddish stems that often turn fully red in sun. Spreads by explosive seed pods that fling seeds several feet.',
+    season:'Flowers Apr–Oct · year-round seedlings in mild winters',
+    threat:'medium',
+    removal:['Pull when young — easy before it flowers, much harder once seeding','The exploding seed pods make it very persistent — bag all plants that have flowers or seeds, never compost','Smells unpleasant when pulled — gloves recommended','Annual weed so it cannot regrow from roots — preventing seeding breaks the cycle','Pull after rain when roots come out cleanest']
+  },
+  {
+    id:'shotweed', name:'Shotweed / Hairy Bittercress', latin:'Cardamine hirsuta',
+    emoji:'🌿', color:'#d8ecd8', yours:false,
+    taxonId:78649,
+    where:'Very common in PNW spring gardens — likely in your beds right now',
+    looks:'Low rosette of small rounded leaflets arranged along a central stalk. Tiny white 4-petaled flowers on upright stems. When seed pods ripen they EXPLODE at the slightest touch, shooting seeds up to 3 feet — hence the name "shotweed".',
+    season:'Most active Feb–May · can appear year-round in mild PNW winters',
+    threat:'medium',
+    removal:['Edible and tasty — slightly spicy like watercress. Pull young plants and eat them.','Must remove BEFORE pods form — once mature the slightest touch explodes seeds everywhere','Very easy to pull — tiny shallow roots. Timing is everything.','Mulching in fall prevents germination the following season']
+  },
+  {
+    id:'horsetail', name:'Horsetail / Equisetum', latin:'Equisetum arvense',
+    emoji:'🌾', color:'#d0d8c8', yours:false,
+    taxonId:48386,
+    where:'Watch moist areas — lower terrace and any persistently wet spots. Indicates good moisture.',
+    looks:'Prehistoric-looking plant with hollow jointed green stems and whorls of thin feathery branches. Looks like a miniature pine tree or bottle brush. No flowers. Spreads by spores and very deep rhizomes that can go 6 feet down.',
+    season:'Emerges Mar · grows through Oct',
+    threat:'high',
+    removal:['Nearly impossible to fully eradicate — roots go 6 feet deep','Improve drainage in affected areas — it thrives in compacted wet soil','Pull or cut repeatedly to exhaust the plant — takes years of patience','Add lime to the soil — horsetail strongly prefers acidic conditions','Consider working WITH it in persistently wet areas rather than against it']
+  },
+  {
+    id:'clover', name:'White Clover', latin:'Trifolium repens',
+    emoji:'🍀', color:'#d8f0e0', yours:false,
+    taxonId:50878,
+    where:'Lawn — likely mixed into your fescue lawn, common throughout Seattle',
+    looks:'Classic three-leafed clover with rounded white flower heads on long stems. Low spreading. Leaves often have a pale V-shaped marking. Soft and dense underfoot.',
+    season:'Active Mar–Oct · flowers May–Sep',
+    threat:'low',
+    removal:['Consider keeping it — fixes nitrogen, soft underfoot, bees love the flowers. It is genuinely beneficial.','If removing: pull by hand or use a daisy grubber to get the whole crown','Low nitrogen soil encourages clover — feed your lawn and grass will out-compete it naturally','Mowing low regularly weakens clover without harming grass']
+  },
+  {
+    id:'dandelion', name:'Dandelion', latin:'Taraxacum officinale',
+    emoji:'🌻', color:'#f8f0c0', yours:false,
+    taxonId:47602,
+    where:'Lawn and any open soil — universal in Seattle gardens',
+    looks:'Deeply toothed leaves in a rosette flat to the ground. Hollow stems oozing milky sap when broken. Bright yellow flowers that turn into the iconic white globular seed heads. Deep taproot that regrows if any piece remains.',
+    season:'Flowers Mar–Oct · year-round leaves',
+    threat:'low',
+    removal:['Edible — young leaves are great in salads, flowers make wine or fritters, roasted roots make coffee substitute','Use a dandelion digger or daisy grubber to get the FULL taproot — any piece left = full regrowth','Pull when soil is wet for cleanest root removal','In lawns: a healthy dense lawn naturally crowds them out over time — feed and overseed bare patches']
+  },
+  {
+    id:'sticky-willy', name:'Sticky Willy / Cleavers', latin:'Galium aparine',
+    emoji:'🌿', color:'#d8e8c8', yours:false,
+    taxonId:76413,
+    where:'Fence lines, shaded bed edges, anywhere with partial shade',
+    looks:'Long scrambling stems covered in tiny hooked hairs that stick aggressively to clothing, fur, and other plants. Narrow leaves in whorls of 6–8 around the stem. Tiny white star-shaped flowers. Will stick to your dog on every garden walk.',
+    season:'Active Feb–Jun · seeds in summer',
+    threat:'medium',
+    removal:['Pull before it seeds — the round seeds also have hooks and hitch-hike on clothing and your dog','Grab at the base and pull the whole stem — comes out in satisfying long strands','Check your dog after garden walks — seeds spread this way throughout the garden','Edible when very young — mild flavor, good in smoothies']
+  }
+];
+
+// Wikipedia page names for each weed (used for photo lookup)
+const WEED_WIKI = {
+  'fescue': ['Festuca_rubra','Tall_fescue'],
+  'japanese-knotweed': ['Reynoutria_japonica','Japanese_knotweed'],
+  'creeping-buttercup': ['Ranunculus_repens','Buttercup','Ranunculus'],
+  'chickweed': ['Stellaria_media','Chickweed'],
+  'bindweed': ['Convolvulus_arvensis','Field_bindweed'],
+  'wild-geranium': ['Geranium_robertianum','Herb_Robert'],
+  'shotweed': ['Cardamine_hirsuta','Hairy_bittercress'],
+  'horsetail': ['Equisetum_arvense','Field_horsetail'],
+  'clover': ['Trifolium_repens','White_clover'],
+  'dandelion': ['Taraxacum_officinale','Dandelion'],
+  'sticky-willy': ['Galium_aparine','Cleavers']
+};
+
+// Cache fetched photos
+const photoCache = {};
+
+async function fetchWeedPhoto(weedId){
+  if(photoCache[weedId]) return photoCache[weedId];
+  const page = WEED_WIKI[weedId];
+  if(!page) return [];
+  const pageList = Array.isArray(page) ? page : [page];
+  try {
+    const urls = [];
+    for(const pg of pageList){
+      if(urls.length >= 3) break;
+      // Get image list from Wikipedia article
+      const apiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pg)}&prop=images&imlimit=10&format=json&origin=*`;
+      const r = await fetch(apiUrl);
+      const d = await r.json();
+      const wikiPages = d.query.pages;
+      const pageData = wikiPages[Object.keys(wikiPages)[0]];
+      const images = (pageData.images || [])
+        .map(img => img.title)
+        .filter(t => /\.(jpg|jpeg|png)$/i.test(t) && !/(icon|logo|map|flag|symbol|blank|button|locator|range)/i.test(t));
+      // Fetch actual URLs
+      for(const title of images.slice(0, 4)){
+        if(urls.length >= 3) break;
+        try {
+          const imgApi = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=imageinfo&iiprop=url&iiurlwidth=800&format=json&origin=*`;
+          const ir = await fetch(imgApi);
+          const id = await ir.json();
+          const ip = id.query.pages;
+          const info = ip[Object.keys(ip)[0]];
+          const thumbUrl = info?.imageinfo?.[0]?.thumburl;
+          if(thumbUrl && !urls.includes(thumbUrl)) urls.push(thumbUrl);
+        } catch(e){}
+      }
+      // Fallback to summary if still no images from this page
+      if(urls.length === 0){
+        try {
+          const sr = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${pg}`, {headers:{'Accept':'application/json'}});
+          const sd = await sr.json();
+          if(sd.originalimage?.source) urls.push(sd.originalimage.source.replace(/\/\d+px-/,'/800px-'));
+          else if(sd.thumbnail?.source) urls.push(sd.thumbnail.source.replace(/\/\d+px-/,'/800px-'));
+        } catch(e){}
+      }
+    }
+    photoCache[weedId] = urls;
+    return urls;
+  } catch(e){ return []; }
+}
+
+function renderWeeds(){
+  const grid = document.getElementById('weed-grid');
+  if(!grid) return;
+  grid.innerHTML = WEEDS.map(w => `
+    <div onclick="openWeed('${w.id}')" style="
+      background:${w.color};border:1.5px solid rgba(74,48,32,0.12);border-radius:14px;
+      padding:0;margin-bottom:12px;cursor:pointer;overflow:hidden;
+      transition:transform .13s,box-shadow .13s;
+    " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(44,31,14,0.14)'"
+       onmouseout="this.style.transform='';this.style.boxShadow=''">
+      <div id="weed-cover-${w.id}" style="height:100px;overflow:hidden;border-radius:12px 12px 0 0;background:#e0d8cc;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:2.5rem;">${w.emoji}</span>
+      </div>
+      <div style="padding:12px;">
+        <div style="display:flex;align-items:flex-start;gap:8px;">
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+              <span style="font-family:'Fraunces',serif;font-size:0.9rem;color:#3a2010;">${w.name}</span>
+              ${w.yours ? '<span style="background:#fdf0e0;border:1px solid #b87020;border-radius:10px;padding:1px 7px;font-size:0.58rem;color:#b87020;font-weight:500;">in your garden</span>' : ''}
+              ${w.threat==='high' ? '<span style="background:#fee2e2;border:1px solid #c88;border-radius:10px;padding:1px 7px;font-size:0.58rem;color:#a04040;">⚠ high priority</span>' : ''}
+            </div>
+            <div style="font-size:0.65rem;color:rgba(58,32,16,0.55);font-style:italic;margin-top:1px;">${w.latin}</div>
+            <div style="font-size:0.73rem;color:#5a3820;margin-top:5px;line-height:1.4;">${w.looks.substring(0,90)}…</div>
+          </div>
+          <div style="font-size:0.7rem;color:rgba(58,32,16,0.35);flex-shrink:0;padding-top:2px;">→</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Load cover photos async
+  WEEDS.forEach(async w => {
+    const photos = await fetchWeedPhoto(w.id);
+    const cover = document.getElementById('weed-cover-' + w.id);
+    if(cover && photos.length > 0){
+      cover.innerHTML = `<img src="${photos[0]}" style="width:100%;height:100px;object-fit:cover;" onerror="this.parentElement.innerHTML='<span style=font-size:2.5rem>${w.emoji}</span>'"/>`;
+    }
+  });
+}
+
+async function openWeed(id){
+  const w = WEEDS.find(x=>x.id===id);
+  if(!w) return;
+  document.getElementById('m-em').textContent = w.emoji;
+  document.getElementById('m-name').textContent = w.name;
+  document.getElementById('m-latin').textContent = w.latin;
+  document.getElementById('m-desc').textContent = w.looks;
+  document.getElementById('m-sun').textContent = w.season;
+  document.getElementById('m-water').textContent = w.threat === 'high' ? '⚠ High priority — act fast' : w.threat === 'medium' ? 'Medium — keep on top of it' : 'Low — manageable';
+  document.getElementById('m-soil').textContent = w.where;
+  document.getElementById('m-timing').textContent = w.yours ? '📍 Spotted in your garden' : 'Watch out for this one';
+  document.getElementById('m-seasons').innerHTML = w.yours
+    ? '<span class="s-badge" style="background:#fdf0e0;color:#b87020;border:1px solid #b87020;">In Your Garden</span>'
+    : '<span class="s-badge" style="background:#f0f0f0;color:#606060;">Watch For This</span>';
+
+  // Google Lens button + removal tips
+  const lensUrl = `https://lens.google.com/search?q=${encodeURIComponent(w.name + ' weed identification')}`;
+  document.getElementById('m-tips').innerHTML =
+    w.removal.map(t=>`<li>${t}</li>`).join('') +
+    `<li style="list-style:none;margin-top:12px;padding-top:12px;border-top:1px solid rgba(106,136,72,0.2);">
+      <a href="${lensUrl}" target="_blank" style="
+        display:flex;align-items:center;gap:8px;
+        background:#f0f4ff;border:1px solid rgba(66,133,244,0.3);border-radius:10px;
+        padding:10px 12px;text-decoration:none;color:#1a56cc;
+      ">
+        <span style="font-size:1.2rem;">📷</span>
+        <div>
+          <div style="font-size:0.8rem;font-weight:500;">Search Google Lens</div>
+          <div style="font-size:0.65rem;opacity:0.7;margin-top:1px;">Open camera to identify this weed</div>
+        </div>
+        <span style="margin-left:auto;font-size:0.75rem;opacity:0.5;">→</span>
+      </a>
+    </li>`;
+
+  // Load photo gallery at bottom async
+  document.getElementById('back-btn').style.display='none';
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+
+  // Load photo gallery into dedicated div
+  const gallery = document.getElementById('weed-gallery');
+  const galleryImgs = document.getElementById('weed-gallery-imgs');
+  if(gallery) gallery.style.display = 'none';
+  const photos = await fetchWeedPhoto(w.id);
+  if(photos.length > 0 && galleryImgs && gallery){
+    galleryImgs.innerHTML = photos.slice(0,3).map(url =>
+      `<img src="${url}" style="flex:1;min-width:0;height:150px;object-fit:cover;border-radius:8px;" onerror="this.style.display='none'"/>`
+    ).join('');
+    galleryImgs.style.cssText = 'display:flex;gap:6px;';
+    gallery.style.display = 'block';
+  }
+}
+
+
+
+switchView('map',true);
+renderWeeds();
+</script>
+</body>
+</html>
