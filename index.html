@@ -370,6 +370,9 @@ svg text{font-family:'Instrument Sans',sans-serif;}
       <div class="chip" onclick="openPlant('leeks')"><span class="chip-em">🧅</span><div class="chip-name">Leeks</div><div class="chip-tag">existing ✓</div></div>
       <div class="chip" onclick="openPlant('agastache-edibles')"><span class="chip-em">🌸</span><div class="chip-name">Agastache</div><div class="chip-tag">hummingbirds ✓</div></div>
       <div class="chip" onclick="openPlant('viola')"><span class="chip-em">🌸</span><div class="chip-name">Viola</div><div class="chip-tag">bee forage · near shed</div></div>
+      <div class="chip new" onclick="openPlant('bok-choy')"><span class="chip-em">🥬</span><div class="chip-name">Bok Choy</div><div class="chip-tag new-tag">in ground Apr 8 ✦</div></div>
+      <div class="chip new" onclick="openPlant('choi-sum')"><span class="chip-em">🥬</span><div class="chip-name">Choi Sum</div><div class="chip-tag new-tag">in ground Apr 8 ✦</div></div>
+      <div class="chip warn" onclick="openPlant('lungwort')"><span class="chip-em">🫁</span><div class="chip-name">Lungwort</div><div class="chip-tag warn">dug up · resettled · monitor</div></div>
       <div class="chip" onclick="openPlant('lilac-tree')"><span class="chip-em">🌳</span><div class="chip-name">Lilac Tree</div><div class="chip-tag">left of bed · fragrant</div></div>
     </div>
     <div class="sect">Shed Wall · Mason Bee House</div>
@@ -456,7 +459,6 @@ svg text{font-family:'Instrument Sans',sans-serif;}
       <div class="chip new" onclick="openPlant('tomatoes')"><span class="chip-em">🍅</span><div class="chip-name">Cherry Tomatoes</div><div class="chip-tag new-tag">planned late April ✦</div></div>
       <div class="chip new" onclick="openPlant('ethiopian-kale-veg')"><span class="chip-em">🥬</span><div class="chip-name">Ethiopian Kale</div><div class="chip-tag new-tag">back wall · transplanted Apr ✦</div></div>
       <div class="chip new" onclick="openPlant('hollyhocks')"><span class="chip-em">🌸</span><div class="chip-name">Hollyhocks</div><div class="chip-tag new-tag">back wall · transplant late Apr ✦</div></div>
-      <div class="chip warn" onclick="openPlant('choi-sum')"><span class="chip-em">🥬</span><div class="chip-name">Choi Sum</div><div class="chip-tag warn">hardening off · struggling</div></div>
       <div class="chip new" onclick="openPlant('touchstone-beets')"><span class="chip-em">🟡</span><div class="chip-name">Touchstone Gold Beets</div><div class="chip-tag new-tag">front edge · direct sown ✦</div></div>
     </div>
   </div>
@@ -495,6 +497,7 @@ svg text{font-family:'Instrument Sans',sans-serif;}
     <div class="zone-rule"></div>
     <div class="grid">
       <div class="chip" onclick="openPlant('angel-bells')"><span class="chip-em">🔔</span><div class="chip-name">Angel Bells</div><div class="chip-tag">×1 · left side ✓</div></div>
+      <div class="chip" onclick="openPlant('flowering-quince')"><span class="chip-em">🔴</span><div class="chip-name">Flowering Quince</div><div class="chip-tag">established · blooming Apr ✓</div></div>
     </div>
     <div class="stairs-row">🪜 Stairs between Angel Bells and Provence Lavender</div>
     <div class="sect">Center · T4 Lavender Bed</div>
@@ -1025,6 +1028,21 @@ const P={
     'Self-seeds prolifically once established — free plants every year',
     'Deadhead to extend blooming, or let them set seed to naturalize',
     'Edible flowers — beautiful in salads and as garnishes'
+  ]
+},
+'lungwort':{em:'🫁',name:'Lungwort',latin:'Pulmonaria officinalis',
+  desc:'New start in T1 Sunny Edibles as of April 8, 2026 — was dug up (likely squirrel or dog disturbance) and resettled the same day. Lungwort is a shade-tolerant perennial with distinctive silver-spotted leaves and early spring flowers that shift from pink to blue. Excellent early pollinator plant that blooms right when mason bees emerge.',
+  sun:'Partial shade — tolerates the shadier left side of T1 near the shed',
+  water:'Moderate — keep consistently moist during establishment, especially after disturbance',
+  soil:'Humus-rich, moisture-retentive — benefits from compost in sandy spots',
+  timing:'Blooms Mar–Apr · silvery foliage all season',seasons:['sp'],
+  tips:[
+    'Was dug up April 8 — check crown is at soil level and plant is upright daily this week',
+    'Water daily at root ball for first 2 weeks given the disturbance stress',
+    'One of the best early-season plants for mason bees — flowers open exactly when they emerge',
+    'Silver-spotted leaves are ornamental all season long even after blooms fade',
+    'Spreads slowly by rhizome — not invasive, easy to divide and move',
+    'Slug damage is common in cool wet April — check leaf undersides regularly'
   ]
 },
 'red-columbine':{em:'🌺',name:'Red Columbine',latin:'Aquilegia formosa',
@@ -2307,10 +2325,14 @@ const CARE_PLANTS = [
    plantedDate:null, stage:'start',
    waterFreq:'Daily at root ball for first 3 weeks after transplant',
    notes:'Still indoors as of April 2026 — transplant late April when 4–6 inches tall. Do not rush.'},
-  {id:'choi-sum-start', name:'Choi Sum', em:'🥬', bed:'veg-right', bedLabel:'T2 Right Veg Bed',
-   plantedDate:'2026-03-30', stage:'start',
-   waterFreq:'Daily — currently hardening off and stressed',
-   notes:'Struggling in hardening off. Bring inside if below 40°F. Increase outdoor time gradually over 7–10 days.'},
+  {id:'choi-sum-start', name:'Choi Sum', em:'🥬', bed:'sunny-edibles', bedLabel:'T1 Sunny Edibles',
+   plantedDate:'2026-04-08', stage:'start',
+   waterFreq:'Daily at root ball — was dug up and resettled, extra vulnerable',
+   notes:'Transplanted into T1 Sunny Edibles April 8. Was dug up (squirrel/dog) and resettled same day — check it is upright and crown is at soil level. Water gently at base daily for first week.'},
+  {id:'lungwort-start', name:'Lungwort (Pulmonaria)', em:'🫁', bed:'sunny-edibles', bedLabel:'T1 Sunny Edibles',
+   plantedDate:'2026-04-08', stage:'start',
+   waterFreq:'Daily — disturbed root system needs extra support this week',
+   notes:'Was dug up April 8, resettled same day. Check crown at soil level and plant is upright. Most vulnerable in first 7 days after disturbance.'},
   {id:'beets-start', name:'Touchstone Gold Beets', em:'🟡', bed:'veg-right', bedLabel:'T2 Right Veg Bed (front edge)',
    plantedDate:'2026-04-01', stage:'start',
    waterFreq:'Every other day until germination, then every 2–3 days',
