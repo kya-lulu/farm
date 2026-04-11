@@ -89,6 +89,7 @@ svg text{font-family:'Instrument Sans',sans-serif;}
   <div class="yard-tab active" id="tab-back" onclick="switchYard('back')"><span class="yard-tab-icon">🌿</span>Back Terraces</div>
   <div class="yard-tab" id="tab-front" onclick="switchYard('front')"><span class="yard-tab-icon">🌸</span>Front Yard</div>
   <div class="yard-tab" id="tab-weeds" onclick="switchYard('weeds')"><span class="yard-tab-icon">🌿</span>Weeds</div>
+  <div class="yard-tab" id="tab-care" onclick="switchYard('care')"><span class="yard-tab-icon">💧</span>Care</div>
   <div class="view-toggle">
     <div class="vt-btn active" id="vt-map" onclick="switchView('map')">🗺 Map</div>
     <div class="vt-btn" id="vt-list" onclick="switchView('list')">☰ List</div>
@@ -453,6 +454,10 @@ svg text{font-family:'Instrument Sans',sans-serif;}
       <div class="chip" onclick="openPlant('calendula-pacific')"><span class="chip-em">🌻</span><div class="chip-name">Calendula Pacific Mix</div><div class="chip-tag">existing ✓</div></div>
       <div class="chip warn" onclick="openPlant('jalapenos')"><span class="chip-em">🌶️</span><div class="chip-name">Pepper Plant</div><div class="chip-tag warn">overwintered? · check survival</div></div>
       <div class="chip new" onclick="openPlant('tomatoes')"><span class="chip-em">🍅</span><div class="chip-name">Cherry Tomatoes</div><div class="chip-tag new-tag">planned late April ✦</div></div>
+      <div class="chip new" onclick="openPlant('ethiopian-kale-veg')"><span class="chip-em">🥬</span><div class="chip-name">Ethiopian Kale</div><div class="chip-tag new-tag">back wall · transplanted Apr ✦</div></div>
+      <div class="chip new" onclick="openPlant('hollyhocks')"><span class="chip-em">🌸</span><div class="chip-name">Hollyhocks</div><div class="chip-tag new-tag">back wall · transplant late Apr ✦</div></div>
+      <div class="chip warn" onclick="openPlant('choi-sum')"><span class="chip-em">🥬</span><div class="chip-name">Choi Sum</div><div class="chip-tag warn">hardening off · struggling</div></div>
+      <div class="chip new" onclick="openPlant('touchstone-beets')"><span class="chip-em">🟡</span><div class="chip-name">Touchstone Gold Beets</div><div class="chip-tag new-tag">front edge · direct sown ✦</div></div>
     </div>
   </div>
 
@@ -721,6 +726,122 @@ svg text{font-family:'Instrument Sans',sans-serif;}
 <div id="weed-grid"></div>
 </div>
 </div>
+<!-- ══════════ CARE PLAN ══════════ -->
+<div class="yard-view" id="yard-care">
+<div class="list-wrap" id="list-care" style="display:block;">
+
+<div style="padding:4px 0 14px;">
+  <div style="font-family:'Fraunces',serif;font-size:1.1rem;color:#4a3020;margin-bottom:4px;">Daily Care Plan</div>
+  <div style="font-size:0.72rem;color:#6a8848;line-height:1.5;">Based on plant age and bed conditions.</div>
+</div>
+
+<!-- DATE TRACKER -->
+<div style="background:#fdf9ee;border:1.5px solid rgba(212,168,48,0.3);border-radius:14px;padding:12px 14px;margin-bottom:16px;">
+  <div style="font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:#b87020;margin-bottom:8px;font-weight:500;">📅 Track your starts</div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <label style="font-size:0.75rem;color:#5a3820;">Planted on:</label>
+    <input type="date" id="plant-date" style="font-size:0.8rem;padding:4px 8px;border:1px solid rgba(74,48,32,0.2);border-radius:6px;background:var(--cream);color:var(--soil);" onchange="updatePlantAge()"/>
+    <div id="plant-age-result" style="font-size:0.78rem;color:#3d5220;font-weight:500;"></div>
+  </div>
+  <div id="plant-age-advice" style="font-size:0.73rem;color:#5a3820;margin-top:8px;line-height:1.5;display:none;"></div>
+</div>
+
+<!-- NEW STARTS -->
+<div style="background:#eef6e8;border:1.5px solid rgba(42,96,48,0.25);border-radius:14px;padding:12px 14px;margin-bottom:12px;">
+  <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;">
+    <span style="font-size:1.2rem;">🌱</span>
+    <div>
+      <div style="font-family:'Fraunces',serif;font-size:0.95rem;color:#2a4010;">New Starts · Daily Attention</div>
+      <div style="font-size:0.62rem;color:#6a8848;margin-top:1px;">First 3–4 weeks = most vulnerable window</div>
+    </div>
+    <span style="margin-left:auto;background:#2a6030;color:#fff;font-size:0.58rem;padding:3px 8px;border-radius:10px;font-weight:600;">CHECK DAILY</span>
+  </div>
+
+  <div style="border-bottom:1px solid rgba(42,96,48,0.12);padding-bottom:10px;margin-bottom:10px;">
+    <div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:#3d5220;margin-bottom:6px;font-weight:500;">🫛 T1 Sunny Edibles</div>
+    <div id="care-starts-sunny" style="display:flex;flex-direction:column;gap:5px;"></div>
+    <div style="background:#f4fbf0;border-radius:8px;padding:8px 10px;margin-top:8px;">
+      <div style="font-size:0.72rem;color:#2a4010;line-height:1.55;">
+        <strong>Soil now:</strong> Moist but not wet ✓ — this is ideal.<br>
+        <strong>Water:</strong> Check with finger 1" down at each plant base. Water every other day if top inch is drying. Never overhead — base only.<br>
+        <strong>Watch for:</strong> Yellowing = too wet. Wilting midday = needs water.
+      </div>
+    </div>
+  </div>
+
+  <div style="border-bottom:1px solid rgba(42,96,48,0.12);padding-bottom:10px;margin-bottom:10px;">
+    <div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:#3d5220;margin-bottom:6px;font-weight:500;">🥦 T2 Right Veg Bed</div>
+    <div id="care-starts-veg" style="display:flex;flex-direction:column;gap:5px;"></div>
+    <div style="background:#fff8ee;border-radius:8px;padding:8px 10px;margin-top:8px;border-left:3px solid #d4a830;">
+      <div style="font-size:0.72rem;color:#5a3820;line-height:1.55;">
+        <strong>Squirrel alert:</strong> Check that newly transplanted kale and any other starts are still upright after disturbance.<br>
+        <strong>Beets:</strong> Keep surface moist until you see sprouts — do not let crust over.<br>
+        <strong>Hollyhocks:</strong> Still hardening off — transplant late April when 4–6 inches tall.
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div style="font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:#3d5220;margin-bottom:6px;font-weight:500;">🌀 T1 Borage Corner</div>
+    <div id="care-starts-borage" style="display:flex;flex-direction:column;gap:5px;"></div>
+    <div style="background:#fff8ee;border-radius:8px;padding:8px 10px;margin-top:8px;border-left:3px solid #d4a830;">
+      <div style="font-size:0.72rem;color:#5a3820;line-height:1.55;">
+        <strong>Soil now:</strong> Dry, sandy, compacted ⚠️ — needs more attention than Sunny Edibles.<br>
+        <strong>Water:</strong> Daily at the root ball — small amounts frequently. Sandy soil drains fast.<br>
+        <strong>Rosemary especially:</strong> Don't let it fully dry out during establishment.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ESTABLISHED -->
+<div style="background:#faf6f0;border:1.5px solid rgba(74,48,32,0.1);border-radius:14px;padding:12px 14px;margin-bottom:12px;">
+  <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;">
+    <span style="font-size:1.2rem;">✅</span>
+    <div>
+      <div style="font-family:'Fraunces',serif;font-size:0.95rem;color:#4a3020;">Established Plants · April Schedule</div>
+      <div style="font-size:0.62rem;color:#6a8848;margin-top:1px;">Morning dew + April rain covers most of these</div>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;" id="care-established-list"></div>
+</div>
+
+<!-- PRIORITY TASKS -->
+<div style="background:#fdf4e8;border:1.5px solid rgba(184,112,32,0.25);border-radius:14px;padding:12px 14px;margin-bottom:12px;">
+  <div style="font-family:'Fraunces',serif;font-size:0.95rem;color:#7a3808;margin-bottom:10px;">⚠️ Priority Tasks · This Week</div>
+  <div style="display:flex;flex-direction:column;gap:7px;">
+    <div style="display:flex;gap:8px;align-items:flex-start;">
+      <span style="font-size:0.9rem;flex-shrink:0;">🪴</span>
+      <div style="font-size:0.75rem;color:#5a3820;line-height:1.5;"><strong>Rhododendron (front shrub line):</strong> Deep soak at base 2× this week. Roof overhang means it gets NO rain.</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:flex-start;">
+      <span style="font-size:0.9rem;flex-shrink:0;">✂️</span>
+      <div style="font-size:0.75rem;color:#5a3820;line-height:1.5;"><strong>Japanese Knotweed (lawn bottom):</strong> Cut to ground now if you see shoots. Every 2–3 weeks through summer.</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:flex-start;">
+      <span style="font-size:0.9rem;flex-shrink:0;">🌾</span>
+      <div style="font-size:0.75rem;color:#5a3820;line-height:1.5;"><strong>T3 Native Pollinators:</strong> Pull fescue grass around yarrow and goldenrod crowns now.</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:flex-start;">
+      <span style="font-size:0.9rem;flex-shrink:0;">🌱</span>
+      <div style="font-size:0.75rem;color:#5a3820;line-height:1.5;"><strong>Seeds still to sow:</strong> Mason bee mix in T3 between blueberry and aster.</div>
+    </div>
+  </div>
+</div>
+
+<!-- RULE CARD -->
+<div style="background:#f0f4ff;border:1.5px solid rgba(66,100,200,0.18);border-radius:14px;padding:12px 14px;margin-bottom:20px;">
+  <div style="font-family:'Fraunces',serif;font-size:0.9rem;color:#2c3880;margin-bottom:8px;">💧 The April Rule</div>
+  <div style="font-size:0.74rem;color:#3a4870;line-height:1.6;">
+    Morning dew + Seattle April rain = skip most established beds.<br>
+    <strong>Always check 2" down before watering anything established.</strong><br>
+    Daily exceptions: <strong>new starts at root ball</strong> + <strong>rhododendron</strong>.
+  </div>
+</div>
+
+</div>
+</div>
+
 </div><!-- main -->
 
 <!-- MODAL -->
@@ -972,6 +1093,57 @@ const P={
     'Gets more tender and less bitter after light frost',
     'Can get large — give it a bit more space than lacinato',
     'Caterpillars love brassicas in summer — check leaf undersides regularly'
+  ]
+},
+'ethiopian-kale-veg':{em:'🥬',name:'Ethiopian Kale (Back Wall)',latin:'Brassica carinata',
+  desc:'Transplanted April 2026 into the back wall of T2 Right Veg Bed — the taller back position gives it room to grow large without shading front-edge crops. Same heat-tolerant, bolt-resistant variety as in the Greens Bed. The south-facing slope here is ideal.',
+  sun:'Full sun — T2 gets all-day sun on south slope',water:'Every 2–3 days while establishing · weekly once settled',soil:'Rich — top-dress with compost around base',
+  timing:'Transplanted Apr 2026 · harvest ongoing',seasons:['sp','su','fa','wi'],
+  tips:[
+    'Water daily at root ball for first 3–4 weeks — then back off to every 2–3 days',
+    'Squirrel activity in this bed — check plant is still upright after disturbance',
+    'Harvest outer leaves only — keep center growing for continuous production',
+    'Can reach 3–4 feet tall — good back-of-bed height behind beets and tomatoes',
+    'Companion: calendula nearby helps deter aphids on brassicas'
+  ]
+},
+'hollyhocks':{em:'🌸',name:'Hollyhocks',latin:'Alcea rosea',
+  desc:'Starting from seed indoors — transplant to T2 Right Veg Bed back wall once they reach 4–6 inches tall, targeting late April. Tall dramatic spires make them perfect for the back wall position. Excellent for pollinators, especially mason bees and leaf cutter bees. Biennial — blooms second year.',
+  sun:'Full sun — needs the T2 south-facing exposure',water:'Low once established · drought tolerant in year 2',soil:'Well-drained — lean to average, no heavy amendment needed',
+  timing:'Transplant late Apr · blooms Jul–Aug (year 2)',seasons:['su'],
+  tips:[
+    'Hold transplanting until 4–6 inches tall — currently barely sprouting as of April 2026',
+    'Plant at back wall — can reach 5–6 feet, will tower beautifully behind other crops',
+    'Biennial: foliage only in year 1, flowers in year 2 — worth the wait',
+    'Leaf cutter bees cut circles from the leaves for nesting — a great sign, not damage',
+    'Self-seeds freely — let a few pods go to seed for free plants next year',
+    'Squirrel risk in this bed — protect young transplants with a physical barrier initially'
+  ]
+},
+'choi-sum':{em:'🥬',name:'Choi Sum',latin:'Brassica rapa (Parachinensis)',
+  desc:'Currently hardening off as of April 2026 — struggling a little in the transition from indoors to outside. Choi sum (Chinese flowering cabbage) is grown for its tender stems and flower shoots. Fast maturing, very productive. Once hardened off, transplant into T2 Right Veg Bed.',
+  sun:'Full to partial sun',water:'Consistent moisture — do not let dry out',soil:'Rich, fertile — top-dress with compost',
+  timing:'Transplant when hardened · harvest 40–50 days',seasons:['sp','fa'],
+  tips:[
+    'Currently hardening off — bring inside if temps drop below 40°F at night',
+    'Harden off gradually: start with 1–2 hrs outside, increase over 7–10 days',
+    'Harvest when flower buds just begin to show — stems most tender at this stage',
+    'Cut stems 6–8 inches long — plant regrows for multiple harvests',
+    'Bolts quickly in heat — get it in ground and harvesting before summer warmth arrives',
+    'Excellent stir-fry green — sweeter and more tender than bok choy stems'
+  ]
+},
+'touchstone-beets':{em:'🟡',name:'Touchstone Gold Beets',latin:'Beta vulgaris',
+  desc:'Direct sown April 2026 at the front edge of T2 Right Veg Bed. Touchstone Gold is a golden-fleshed beet — sweeter and milder than red varieties, and the color doesn\'t bleed when cooked. Both the roots and the greens are edible.',
+  sun:'Full sun — front edge of T2 gets excellent exposure',water:'Every other day until germination · every 2–3 days after',soil:'Loamy, well-worked — remove any stones that could fork the roots',
+  timing:'Direct sown Apr · harvest Jun–Jul (55–65 days)',seasons:['sp','su'],
+  tips:[
+    'Keep soil surface consistently moist until germination — 7–14 days',
+    'Beet "seeds" are actually clusters — thin to one seedling per 3 inches once up',
+    'Thinned seedlings are edible — use in salads',
+    'Don\'t over-fertilize with nitrogen — encourages tops over roots',
+    'Harvest at golf-ball size for sweetest flavor — bigger beets can get woody',
+    'Greens are excellent — harvest a few leaves per plant without pulling the root'
   ]
 },
 'mustard-greens':{em:'🌿',name:'Mustard Greens',latin:'Brassica juncea',
@@ -1713,9 +1885,11 @@ function switchYard(yard){
   document.getElementById('tab-'+yard).classList.add('active');
   document.getElementById('yard-'+yard).classList.add('active');
   if(yard==='weeds'){
-    // Show weeds list, hide map/list toggle
     document.querySelector('.view-toggle').style.visibility='hidden';
     renderWeeds();
+  } else if(yard==='care'){
+    document.querySelector('.view-toggle').style.visibility='hidden';
+    renderCare();
   } else {
     document.querySelector('.view-toggle').style.visibility='visible';
     switchView(currentView,true);
@@ -2091,8 +2265,165 @@ async function openWeed(id){
 
 
 
+// ══════════ CARE PLAN DATA ══════════
+const CARE_PLANTS = [
+  {id:'snap-peas-start', name:'Sugar Snap Peas', em:'🫛', bed:'sunny-edibles', bedLabel:'T1 Sunny Edibles',
+   plantedDate:'2026-03-30', stage:'start',
+   waterFreq:'Every other day — finger check 1" down at base',
+   notes:'Growing on bamboo sticks. Water at base only — overhead water causes powdery mildew.'},
+  {id:'leeks-start', name:'Leeks', em:'🧅', bed:'sunny-edibles', bedLabel:'T1 Sunny Edibles',
+   plantedDate:'2026-03-30', stage:'start',
+   waterFreq:'Every other day during establishment',
+   notes:'Keep moist but not soggy. Soil here retains well — check before each water.'},
+  {id:'spinach-start', name:'Longstanding Spinach', em:'🌱', bed:'sunny-edibles', bedLabel:'T1 Sunny Edibles',
+   plantedDate:'2026-03-30', stage:'start',
+   waterFreq:'Every other day — consistent moisture prevents bolting',
+   notes:'Place in shadiest part of bed. Will bolt fast in full sun.'},
+  {id:'nz-spinach-start', name:'New Zealand Spinach', em:'🌿', bed:'sunny-edibles', bedLabel:'T1 Sunny Edibles',
+   plantedDate:'2026-03-30', stage:'start',
+   waterFreq:'Every other day — more drought tolerant than regular spinach once up',
+   notes:'Heat and drought tolerant once established. More forgiving than regular spinach.'},
+  {id:'lettuce-start', name:'Lettuce Mix (Oak + Emerald + Baja)', em:'🥗', bed:'sunny-edibles', bedLabel:'T1 Sunny Edibles',
+   plantedDate:'2026-03-30', stage:'start',
+   waterFreq:'Every other day — never let dry out',
+   notes:'Bolt risk in full sun — keep in shadier end of bed. Harvest outer leaves to extend season.'},
+  {id:'beets-start', name:'Touchstone Gold Beets', em:'🟡', bed:'veg-right', bedLabel:'T2 Right Veg Bed (front edge)',
+   plantedDate:'2026-03-30', stage:'start',
+   waterFreq:'Every other day until germination, then every 2–3 days',
+   notes:'Direct sown at front edge of T2 Right Veg Bed. Keep soil surface moist until germination (7–14 days). Thin to 3" apart once up.'},
+  {id:'chamomile-start', name:'Chamomile', em:'🌼', bed:'borage-corner', bedLabel:'T1 Borage Corner',
+   plantedDate:'2026-03-30', stage:'start',
+   waterFreq:'Daily at root ball — sandy soil dries fast',
+   notes:'Fast grower — once you see new leaf growth, back off to every other day.'},
+  {id:'rosemary-start', name:'Rosemary', em:'🌿', bed:'borage-corner', bedLabel:'T1 Borage Corner',
+   plantedDate:'2026-03-30', stage:'start',
+   waterFreq:'Daily during first 3 weeks — do NOT let dry out yet',
+   notes:'Will be very drought tolerant as adult. Sandy soil drains extremely fast — check daily.'},
+  {id:'ethiopian-kale-veg-start', name:'Ethiopian Kale (Back Wall)', em:'🥬', bed:'veg-right', bedLabel:'T2 Right Veg Bed',
+   plantedDate:'2026-04-01', stage:'start',
+   waterFreq:'Daily at root ball for first 3–4 weeks',
+   notes:'Transplanted into T2 Right Veg Bed back wall. Check upright after squirrel activity. Water at base only.'},
+  {id:'hollyhocks-start', name:'Hollyhocks', em:'🌸', bed:'veg-right', bedLabel:'T2 Right Veg Bed',
+   plantedDate:null, stage:'start',
+   waterFreq:'Daily at root ball for first 3 weeks after transplant',
+   notes:'Still indoors as of April 2026 — transplant late April when 4–6 inches tall. Do not rush.'},
+  {id:'choi-sum-start', name:'Choi Sum', em:'🥬', bed:'veg-right', bedLabel:'T2 Right Veg Bed',
+   plantedDate:'2026-03-30', stage:'start',
+   waterFreq:'Daily — currently hardening off and stressed',
+   notes:'Struggling in hardening off. Bring inside if below 40°F. Increase outdoor time gradually over 7–10 days.'},
+  {id:'beets-start', name:'Touchstone Gold Beets', em:'🟡', bed:'veg-right', bedLabel:'T2 Right Veg Bed (front edge)',
+   plantedDate:'2026-04-01', stage:'start',
+   waterFreq:'Every other day until germination, then every 2–3 days',
+   notes:'Direct sown at front edge of T2 Right Veg Bed. Keep soil surface moist until germination (7–14 days). Thin to 3" apart once up.'},
+  {id:'est-rhodo', name:'Rhododendron', em:'⚠️', bed:'shrub-line', bedLabel:'Front Shrub Line',
+   plantedDate:null, stage:'established',
+   waterFreq:'2× per week — deep soak at base each time',
+   notes:'Under roof overhang — gets NO rain. Most at-risk established plant. Soak slowly, not a quick spray.'},
+  {id:'est-lavender-run', name:'Grosso Lavender Run', em:'💜', bed:'lavender-run', bedLabel:'T2 Lavender Run',
+   plantedDate:null, stage:'established',
+   waterFreq:'Once a week maximum — only if no rain in 7 days',
+   notes:'Overwatering is the main killer. April rain usually sufficient.'},
+  {id:'est-provence', name:'Provence Lavender ×3', em:'💜', bed:'lower-center', bedLabel:'T4 Provence Lavender',
+   plantedDate:null, stage:'established',
+   waterFreq:'Once a week — check struggling plant crown for rot',
+   notes:'Two thriving, one struggling. Crown should be at soil level, no mulch touching stem.'},
+  {id:'est-chard', name:'Swiss Chard + Kale + Greens', em:'🥬', bed:'greens-bed', bedLabel:'T2 Leafy Greens',
+   plantedDate:null, stage:'established',
+   waterFreq:'Every 2–3 days — loamy soil holds well',
+   notes:'Check 2" down before watering. Consistent moisture prevents bolting.'},
+  {id:'est-raspberry', name:'Raspberry + Black Currant', em:'🍓', bed:'raspberry-circle', bedLabel:'T2 Raspberry Circle',
+   plantedDate:null, stage:'established',
+   waterFreq:'Every 3–4 days — not fruiting yet',
+   notes:'Just leafing out. Do not overwater in April.'},
+  {id:'est-brassicas', name:'Cauliflower + Brussels Sprouts', em:'🥦', bed:'veg-right', bedLabel:'T2 Right Veg Bed',
+   plantedDate:null, stage:'established',
+   waterFreq:'Every 2–3 days — consistent moisture',
+   notes:'Water at base in morning so foliage dries during the day.'},
+  {id:'est-yarrow', name:'Yarrow + Goldenrod (T3)', em:'🌼', bed:'goldenrod-yarrow', bedLabel:'T3 Native Pollinators',
+   plantedDate:null, stage:'established',
+   waterFreq:'No watering needed in April',
+   notes:'Native, drought tolerant. April rain is enough. Focus is on pulling grass, not watering.'},
+  {id:'est-tulips', name:'Tulips (flower bed)', em:'🌷', bed:'flower-bed', bedLabel:'T1 Flower Bed',
+   plantedDate:null, stage:'established',
+   waterFreq:'No supplemental water — let nature handle it',
+   notes:'Overwatering speeds bulb rot. Let die back naturally after blooming.'},
+  {id:'est-borage', name:'Borage (reseeded)', em:'🌀', bed:'borage-corner', bedLabel:'T1 Borage Corner',
+   plantedDate:null, stage:'established',
+   waterFreq:'No watering needed — self-managing',
+   notes:'Sandy dry conditions are exactly what it wants. Leave it alone.'},
+];
+
+function updatePlantAge(){
+  const input = document.getElementById('plant-date');
+  const result = document.getElementById('plant-age-result');
+  const advice = document.getElementById('plant-age-advice');
+  if(!input.value){ result.textContent=''; advice.style.display='none'; return; }
+  const planted = new Date(input.value);
+  const today = new Date();
+  const days = Math.floor((today - planted) / 86400000);
+  result.textContent = days === 0 ? 'Planted today' : `${days} day${days===1?'':'s'} in ground`;
+  advice.style.display='block';
+  if(days <= 7){
+    advice.innerHTML = '🌱 <strong>Week 1:</strong> Most vulnerable. Water daily at root ball. Check 1" down morning and evening.';
+  } else if(days <= 14){
+    advice.innerHTML = '🌿 <strong>Week 2:</strong> Roots spreading. Water every other day — check before each water. Watch for new leaf growth.';
+  } else if(days <= 21){
+    advice.innerHTML = '🌳 <strong>Week 3:</strong> If you see new growth, roots are working. Shift to every 2–3 days.';
+  } else {
+    advice.innerHTML = '✅ <strong>4+ weeks:</strong> Establishing well. Treat like a maturing plant — check 2" down and follow the bed\'s normal schedule.';
+  }
+}
+
+function renderCare(){
+  const sunnyStarts = CARE_PLANTS.filter(p=>p.stage==='start'&&p.bed==='sunny-edibles');
+  const borageStarts = CARE_PLANTS.filter(p=>p.stage==='start'&&p.bed==='borage-corner');
+  const vegStarts = CARE_PLANTS.filter(p=>p.stage==='start'&&p.bed==='veg-right');
+  const established = CARE_PLANTS.filter(p=>p.stage==='established');
+
+  const startCard = (p) => {
+    const planted = p.plantedDate ? new Date(p.plantedDate) : null;
+    const days = planted ? Math.floor((new Date()-planted)/86400000) : null;
+    const daysLabel = days !== null ? `<span style="background:#d4f0d0;color:#1a5010;font-size:0.58rem;padding:2px 7px;border-radius:10px;margin-left:5px;">${days}d in ground</span>` : '';
+    return `<div style="background:#fff;border-radius:9px;padding:9px 11px;border:1px solid rgba(42,96,48,0.15);">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+        <span style="font-size:1rem;">${p.em}</span>
+        <span style="font-family:'Fraunces',serif;font-size:0.8rem;color:#2a4010;">${p.name}</span>
+        ${daysLabel}
+      </div>
+      <div style="font-size:0.7rem;color:#3d5220;margin-bottom:2px;">💧 ${p.waterFreq}</div>
+      <div style="font-size:0.67rem;color:#6a7850;line-height:1.4;">${p.notes}</div>
+    </div>`;
+  };
+
+  const estCard = (p) => {
+    const isWarn = p.waterFreq.includes('2×') || p.waterFreq.includes('Every 2');
+    return `<div style="display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(74,48,32,0.08);">
+      <span style="font-size:1rem;flex-shrink:0;">${p.em}</span>
+      <div style="flex:1;">
+        <div style="font-size:0.77rem;font-family:'Fraunces',serif;color:#3a2010;">${p.name}</div>
+        <div style="font-size:0.62rem;color:#8a7848;margin-bottom:2px;">${p.bedLabel}</div>
+        <div style="font-size:0.7rem;color:${isWarn?'#b87020':'#3d6020'};line-height:1.4;">💧 ${p.waterFreq}</div>
+        <div style="font-size:0.66rem;color:#7a6840;margin-top:2px;line-height:1.35;">${p.notes}</div>
+      </div>
+    </div>`;
+  };
+
+  const sc = document.getElementById('care-starts-sunny');
+  const bc = document.getElementById('care-starts-borage');
+  const vc = document.getElementById('care-starts-veg');
+  const ec = document.getElementById('care-established-list');
+  if(sc) sc.innerHTML = sunnyStarts.map(startCard).join('');
+  if(bc) bc.innerHTML = borageStarts.map(startCard).join('');
+  if(vc) vc.innerHTML = vegStarts.map(startCard).join('');
+  if(ec) ec.innerHTML = established.map(estCard).join('');
+
+  const di = document.getElementById('plant-date');
+  if(di && !di.value){ di.value='2026-03-30'; updatePlantAge(); }
+}
+
 switchView('map',true);
 renderWeeds();
+renderCare();
 </script>
 </body>
 </html>
