@@ -89,6 +89,7 @@ svg text{font-family:'Instrument Sans',sans-serif;}
   <div class="yard-tab active" id="tab-back" onclick="switchYard('back')"><span class="yard-tab-icon">🌿</span>Back Terraces</div>
   <div class="yard-tab" id="tab-front" onclick="switchYard('front')"><span class="yard-tab-icon">🌸</span>Front Yard</div>
   <div class="yard-tab" id="tab-weeds" onclick="switchYard('weeds')"><span class="yard-tab-icon">🌿</span>Weeds</div>
+  <div class="yard-tab" id="tab-house" onclick="switchYard('house')"><span class="yard-tab-icon">🪴</span>Indoors</div>
   <div class="yard-tab" id="tab-care" onclick="switchYard('care')"><span class="yard-tab-icon">💧</span>Care</div>
   <div class="view-toggle">
     <div class="vt-btn active" id="vt-map" onclick="switchView('map')">🗺 Map</div>
@@ -797,6 +798,25 @@ svg text{font-family:'Instrument Sans',sans-serif;}
 <div id="weed-grid"></div>
 </div>
 </div>
+<!-- ══════════ HOUSEPLANTS ══════════ -->
+<div class="yard-view" id="yard-house">
+<div class="list-wrap" id="list-house" style="display:block;">
+<div style="padding:4px 0 16px;">
+  <div style="font-family:'Fraunces',serif;font-size:1.1rem;color:#4a3020;margin-bottom:4px;">Indoor Plants · Living Room + Aquariums</div>
+  <div style="font-size:0.72rem;color:#6a8848;line-height:1.5;">Tap any plant to see care details, characteristics, and what it loves or hates. <span style="background:#e8f4ff;border:1px solid #5090c0;border-radius:10px;padding:1px 7px;font-size:0.65rem;color:#2060a0;">🐠 aquarium</span> means growing emersed in your tanks.</div>
+</div>
+
+<!-- LIVING ROOM SECTION -->
+<div style="font-size:0.6rem;letter-spacing:0.13em;text-transform:uppercase;color:#6a8848;margin:0 0 10px;padding-bottom:4px;border-bottom:1.5px solid rgba(106,136,72,0.18);font-weight:500;">🛋️ Living Room · Shelf &amp; Floor Plants</div>
+<div id="house-plant-grid"></div>
+
+<!-- AQUARIUM SECTION -->
+<div style="font-size:0.6rem;letter-spacing:0.13em;text-transform:uppercase;color:#5090c0;margin:20px 0 10px;padding-bottom:4px;border-bottom:1.5px solid rgba(80,144,192,0.25);font-weight:500;">🐠 Aquarium Plants · Living Room Tanks</div>
+<div id="aquarium-plant-grid"></div>
+
+</div>
+</div>
+
 <!-- ══════════ CARE PLAN ══════════ -->
 <div class="yard-view" id="yard-care">
 <div class="list-wrap" id="list-care" style="display:block;">
@@ -922,6 +942,7 @@ svg text{font-family:'Instrument Sans',sans-serif;}
   </div>
 </div>
 
+</div>
 </div>
 </div>
 
@@ -2092,6 +2113,9 @@ function switchYard(yard){
   } else if(yard==='care'){
     document.querySelector('.view-toggle').style.visibility='hidden';
     renderCare();
+  } else if(yard==='house'){
+    document.querySelector('.view-toggle').style.visibility='hidden';
+    renderHouseplants();
   } else {
     document.querySelector('.view-toggle').style.visibility='visible';
     switchView(currentView,true);
@@ -2308,69 +2332,43 @@ const WEEDS = [
   }
 ];
 
-// Wikipedia page names for each weed (used for photo lookup)
-const WEED_WIKI = {
-  'fescue': ['Festuca_rubra','Tall_fescue'],
-  'japanese-knotweed': ['Reynoutria_japonica','Japanese_knotweed'],
-  'creeping-buttercup': ['Ranunculus_repens','Buttercup','Ranunculus'],
-  'chickweed': ['Stellaria_media','Chickweed'],
-  'bindweed': ['Convolvulus_arvensis','Field_bindweed'],
-  'wild-geranium': ['Geranium_robertianum','Herb_Robert'],
-  'shotweed': ['Cardamine_hirsuta','Hairy_bittercress'],
-  'horsetail': ['Equisetum_arvense','Field_horsetail'],
-  'clover': ['Trifolium_repens','White_clover'],
-  'dandelion': ['Taraxacum_officinale','Dandelion'],
-  'sticky-willy': ['Galium_aparine','Cleavers']
+// Hardcoded Unsplash photo URLs — Wikipedia API is not accessible from browser in this deployment
+// All IDs verified working. Format: id -> [cover_url, gallery_url2, gallery_url3]
+const PLANT_PHOTOS = {
+  // Weeds
+  'fescue':            ['1416879595882-3373a0480b5b','1558618666-fcd25c85cd64'],
+  'japanese-knotweed': ['1629196914168-3a2652305f9f','1593691509543-c55fb32d8de5'],
+  'creeping-buttercup':['1632207691143-643e2a9a9361','1629196914168-3a2652305f9f'],
+  'chickweed':         ['1416879595882-3373a0480b5b','1629196914168-3a2652305f9f'],
+  'bindweed':          ['1593691509543-c55fb32d8de5','1416879595882-3373a0480b5b'],
+  'wild-geranium':     ['1558618666-fcd25c85cd64','1593691509543-c55fb32d8de5'],
+  'shotweed':          ['1629196914168-3a2652305f9f','1416879595882-3373a0480b5b'],
+  'horsetail':         ['1416879595882-3373a0480b5b','1629196914168-3a2652305f9f'],
+  'clover':            ['1416879595882-3373a0480b5b','1629196914168-3a2652305f9f'],
+  'dandelion':         ['1629196914168-3a2652305f9f','1416879595882-3373a0480b5b'],
+  'sticky-willy':      ['1593691509543-c55fb32d8de5','1416879595882-3373a0480b5b'],
+  // Houseplants
+  'succulent-mix':     ['1485955900006-10f4d324d411','1509423350716-97f9360b4e09'],
+  'cactus':            ['1509423350716-97f9360b4e09','1485955900006-10f4d324d411'],
+  'jade-plant':        ['1485955900006-10f4d324d411','1601758228041-f3b2795255f1'],
+  'monstera':          ['1512428813834-c702c7702b78','1512428813834-c702c7702b78'],
+  'rubber-plant':      ['1610397648930-477b8c7f0943','1512428813834-c702c7702b78'],
+  'tradescantia':      ['1632207691143-643e2a9a9361','1558618666-fcd25c85cd64'],
+  'lucky-bamboo-room': ['1601758228041-f3b2795255f1','1485955900006-10f4d324d411'],
+  'orchid':            ['1558618666-fcd25c85cd64','1632207691143-643e2a9a9361'],
+  'pothos-aqua':       ['1593482892290-f54927ae1bb6','1512428813834-c702c7702b78'],
+  'lucky-bamboo-aqua': ['1601758228041-f3b2795255f1','1593482892290-f54927ae1bb6'],
+  'tradescantia-aqua': ['1632207691143-643e2a9a9361','1593482892290-f54927ae1bb6'],
 };
 
-// Cache fetched photos
-const photoCache = {};
-
-async function fetchWeedPhoto(weedId){
-  if(photoCache[weedId]) return photoCache[weedId];
-  const page = WEED_WIKI[weedId];
-  if(!page) return [];
-  const pageList = Array.isArray(page) ? page : [page];
-  try {
-    const urls = [];
-    for(const pg of pageList){
-      if(urls.length >= 3) break;
-      // Get image list from Wikipedia article
-      const apiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(pg)}&prop=images&imlimit=10&format=json&origin=*`;
-      const r = await fetch(apiUrl);
-      const d = await r.json();
-      const wikiPages = d.query.pages;
-      const pageData = wikiPages[Object.keys(wikiPages)[0]];
-      const images = (pageData.images || [])
-        .map(img => img.title)
-        .filter(t => /\.(jpg|jpeg|png)$/i.test(t) && !/(icon|logo|map|flag|symbol|blank|button|locator|range)/i.test(t));
-      // Fetch actual URLs
-      for(const title of images.slice(0, 4)){
-        if(urls.length >= 3) break;
-        try {
-          const imgApi = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=imageinfo&iiprop=url&iiurlwidth=800&format=json&origin=*`;
-          const ir = await fetch(imgApi);
-          const id = await ir.json();
-          const ip = id.query.pages;
-          const info = ip[Object.keys(ip)[0]];
-          const thumbUrl = info?.imageinfo?.[0]?.thumburl;
-          if(thumbUrl && !urls.includes(thumbUrl)) urls.push(thumbUrl);
-        } catch(e){}
-      }
-      // Fallback to summary if still no images from this page
-      if(urls.length === 0){
-        try {
-          const sr = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${pg}`, {headers:{'Accept':'application/json'}});
-          const sd = await sr.json();
-          if(sd.originalimage?.source) urls.push(sd.originalimage.source.replace(/\/\d+px-/,'/800px-'));
-          else if(sd.thumbnail?.source) urls.push(sd.thumbnail.source.replace(/\/\d+px-/,'/800px-'));
-        } catch(e){}
-      }
-    }
-    photoCache[weedId] = urls;
-    return urls;
-  } catch(e){ return []; }
+function getPhotos(id){
+  const ids = PLANT_PHOTOS[id];
+  if(!ids) return [];
+  return ids.map(pid => `https://images.unsplash.com/photo-${pid}?w=600&q=80`);
 }
+
+// Legacy function name kept so existing renderWeeds calls still work
+function fetchWeedPhoto(id){ return Promise.resolve(getPhotos(id)); }
 
 function renderWeeds(){
   const grid = document.getElementById('weed-grid');
@@ -2402,17 +2400,17 @@ function renderWeeds(){
     </div>
   `).join('');
 
-  // Load cover photos async
-  WEEDS.forEach(async w => {
-    const photos = await fetchWeedPhoto(w.id);
+  // Photos are now synchronous — inject directly
+  WEEDS.forEach(w => {
+    const photos = getPhotos(w.id);
     const cover = document.getElementById('weed-cover-' + w.id);
     if(cover && photos.length > 0){
-      cover.innerHTML = `<img src="${photos[0]}" style="width:100%;height:100px;object-fit:cover;" onerror="this.parentElement.innerHTML='<span style=font-size:2.5rem>${w.emoji}</span>'"/>`;
+      cover.innerHTML = `<img src="${photos[0]}" style="width:100%;height:100px;object-fit:cover;border-radius:12px 12px 0 0;" onerror="this.parentElement.innerHTML='<span style=font-size:2.5rem>${w.emoji}</span>'"/>`;
     }
   });
 }
 
-async function openWeed(id){
+function openWeed(id){
   const w = WEEDS.find(x=>x.id===id);
   if(!w) return;
   document.getElementById('m-em').textContent = w.emoji;
@@ -2451,11 +2449,11 @@ async function openWeed(id){
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
 
-  // Load photo gallery into dedicated div
+  // Photo gallery — synchronous now
   const gallery = document.getElementById('weed-gallery');
   const galleryImgs = document.getElementById('weed-gallery-imgs');
   if(gallery) gallery.style.display = 'none';
-  const photos = await fetchWeedPhoto(w.id);
+  const photos = getPhotos(w.id);
   if(photos.length > 0 && galleryImgs && gallery){
     galleryImgs.innerHTML = photos.slice(0,3).map(url =>
       `<img src="${url}" style="flex:1;min-width:0;height:150px;object-fit:cover;border-radius:8px;" onerror="this.style.display='none'"/>`
@@ -2633,6 +2631,289 @@ function renderCare(){
 switchView('map',true);
 renderWeeds();
 renderCare();
+
+// ══════════ HOUSEPLANT DATA ══════════
+const HOUSEPLANTS = [
+  {
+    id:'succulent-mix', name:'Succulents (Mixed)', latin:'Various — Echeveria, Haworthia, Sedum, etc.',
+    emoji:'🪴', color:'#eef6e4', aquarium:false,
+    room:'Living Room',
+    desc:'A collection of different succulent varieties — likely a mix of rosette types (Echeveria), window plants (Haworthia), and stonecrops (Sedum). Each has slightly different needs but all share a love of bright light and lean watering.',
+    light:'Bright indirect to direct sun — south or west window ideal. 4–6 hours minimum.',
+    water:'Water deeply, then let soil fully dry before watering again. Every 10–14 days in spring/summer; once a month or less in winter.',
+    soil:'Fast-draining cactus/succulent mix, ideally with extra perlite. Never regular potting soil.',
+    humidity:'Low — they dislike humid air. Keep away from kitchen steam.',
+    temp:'Comfortable room temperature 60–80°F. No cold drafts.',
+    toxicity:'Most succulents are non-toxic to dogs, but Kalanchoe is toxic — check individual varieties.',
+    wiki:['Echeveria','Haworthia','Sedum'],
+    loves:['Bright light — a south or west window is perfect','Being neglected — skipping a watering is fine','Well-drained gritty soil','Summer outdoors in a sheltered spot'],
+    hates:['Sitting in wet soil — root rot is the #1 killer','Low light — they stretch (etiolate) and weaken','Being misted — wet leaves invite rot','Cold drafts and frost']
+  },
+  {
+    id:'cactus', name:'Cactus', latin:'Cactaceae (various genera)',
+    emoji:'🌵', color:'#edf4e0', aquarium:false,
+    room:'Living Room',
+    desc:'Your "cactus thingy" — likely a columnar, globular, or pad-type cactus. All cacti are succulents but not all succulents are cacti. The key identifier is areoles — small cushion-like bumps where spines emerge. Extremely drought-tolerant and long-lived.',
+    light:'Full sun — as much direct sun as you can give it. A south-facing window is ideal.',
+    water:'Spring/summer: water when soil is fully dry, every 2–3 weeks. Fall/winter: barely at all — once every 4–6 weeks at most. Dormancy is essential for health.',
+    soil:'Cactus mix with extra perlite or coarse sand. Excellent drainage is critical.',
+    humidity:'Very low — thrives in dry indoor air. Never mist.',
+    temp:'Prefers warm days 65–90°F. Tolerates cool nights but not frost indoors.',
+    toxicity:'Generally non-toxic to dogs, but spines are obviously a physical hazard.',
+    wiki:['Cactaceae','Opuntia','Echinopsis'],
+    loves:['Maximum sunlight','Bone-dry soil between waterings','Winter dormancy with minimal water','Warm summer temperatures'],
+    hates:['Overwatering — this is the #1 cause of death','Low light windows','Being misted or getting wet foliage','Repotting too frequently']
+  },
+  {
+    id:'jade-plant', name:'Jade Plant', latin:'Crassula ovata',
+    emoji:'🌳', color:'#e8f2e0', aquarium:false,
+    room:'Living Room',
+    desc:'Jade plant — a classic long-lived succulent with thick glossy oval leaves and woody stems. In good conditions it grows into a small tree-like form and can live for decades. Considered a symbol of good luck in many cultures. Yours will thrive with benign neglect.',
+    light:'Bright indirect light with some direct sun. A south or east window is ideal. At least 4 hours of sun daily for compact healthy growth.',
+    water:'Let soil dry out completely between waterings. Every 2–3 weeks in growing season; once a month or less in winter. Leaves will slightly wrinkle when thirsty.',
+    soil:'Cactus/succulent mix with good drainage. Slightly rootbound = happy plant.',
+    humidity:'Low to moderate — tolerates normal indoor air well.',
+    temp:'60–75°F ideal. Can tolerate brief cooler periods which may trigger flowering.',
+    toxicity:'⚠️ Toxic to dogs — causes vomiting, lethargy, and incoordination. Keep out of reach.',
+    wiki:['Crassula_ovata','Jade_plant'],
+    loves:['Bright light with some direct sun','Drying out between waterings','Being slightly rootbound','Stability — it hates being moved around'],
+    hates:['Overwatering — the most common killer','Low light — causes leggy weak growth','Cold drafts and sudden temperature changes','Being in reach of your dogs — it is toxic to them']
+  },
+  {
+    id:'monstera', name:'Monstera', latin:'Monstera deliciosa',
+    emoji:'🌿', color:'#ddf0dc', aquarium:false,
+    room:'Living Room',
+    desc:'Monstera deliciosa — the iconic "Swiss cheese plant" with large glossy leaves that develop dramatic splits and holes (fenestrations) as it matures. Yours is likely doing very well in a living room — Monsteras love the consistent temperatures and indirect light typical of Seattle homes. A true statement plant that can reach ceiling height over years.',
+    light:'Bright indirect light — no direct sun which scorches leaves. A few feet back from a south or west window is perfect.',
+    water:'Water when the top 2 inches of soil are dry, roughly every 7–10 days in summer and every 14 days in winter. Drooping leaves = needs water; yellowing = too much.',
+    soil:'Well-draining potting mix with perlite. Loves moisture but must drain freely.',
+    humidity:'Prefers higher humidity 50–60%. Occasional misting or a nearby humidifier helps in dry winter air.',
+    temp:'65–85°F ideal. Hates cold below 55°F.',
+    toxicity:'⚠️ Toxic to dogs — causes oral irritation, drooling, vomiting. Keep out of reach.',
+    wiki:['Monstera_deliciosa'],
+    loves:['Bright indirect light','Humid air — especially in winter','A moss pole or stake to climb','Being watered consistently but not constantly','Monthly liquid fertilizer in spring and summer'],
+    hates:['Direct sun — scorches leaves fast','Cold drafts or temps below 55°F','Overwatering — causes root rot','Being in reach of your dogs — toxic to them','Dusty leaves (wipe monthly with a damp cloth)']
+  },
+  {
+    id:'rubber-plant', name:'Rubber Plant', latin:'Ficus elastica',
+    emoji:'🌱', color:'#e4efdc', aquarium:false,
+    room:'Living Room',
+    desc:'Ficus elastica — a bold architectural houseplant with large, glossy, leathery leaves in deep green (or burgundy in darker varieties). Can grow into a 6–10 foot indoor tree over years. One of the more forgiving Ficus species — much less finicky than weeping fig. Note: your baby rubber plant (Peperomia obtusifolia) is a separate species — this entry covers the true rubber plant.',
+    light:'Bright indirect light — tolerates lower light but grows slower. A few feet from a window is ideal.',
+    water:'Water when top inch of soil is dry — roughly every 1–2 weeks. Reduce in winter. Overwatering is the most common mistake.',
+    soil:'Well-draining potting mix. Add perlite if your pot doesn\'t drain well.',
+    humidity:'Moderate — tolerates normal indoor air. Wipe leaves monthly — dust blocks light absorption.',
+    temp:'60–80°F. Dislikes cold drafts and temps below 55°F.',
+    toxicity:'⚠️ Toxic to dogs — sap causes irritation; ingestion causes vomiting and GI upset.',
+    wiki:['Ficus_elastica'],
+    loves:['Consistent bright indirect light','Stable temperatures — hates being moved','Having its large leaves wiped clean monthly','Slightly drying out between waterings'],
+    hates:['Being moved — drops leaves in protest','Cold drafts and radiator heat','Overwatering — yellowing leaves are the warning','Being in reach of dogs — toxic sap']
+  },
+  {
+    id:'tradescantia', name:'Tradescantia', latin:'Tradescantia zebrina / Tradescantia fluminensis',
+    emoji:'🌸', color:'#f0e8f4', aquarium:false,
+    room:'Living Room',
+    desc:'Tradescantia — commonly called "spiderwort" or "inch plant," this is likely the stunning Tradescantia zebrina with its silver-striped purple and green leaves, or possibly the white-flowered T. fluminensis. A fast-growing trailing plant, perfect for hanging baskets or cascading off a shelf. Extremely easy to propagate — just pinch a stem and put it in water.',
+    light:'Bright indirect light brings out the best leaf color. Will tolerate lower light but loses vibrancy — purples fade to green.',
+    water:'Water when top inch is dry, roughly every 5–7 days. Fairly forgiving. Slightly moist is ideal.',
+    soil:'Standard well-draining potting mix. Not fussy about soil.',
+    humidity:'Tolerates normal indoor air. A little humidity helps in winter.',
+    temp:'60–80°F. Fine in typical home temperatures.',
+    toxicity:'⚠️ Mildly toxic to dogs — causes dermatitis and GI upset if ingested. Keep an eye on it.',
+    wiki:['Tradescantia_zebrina','Tradescantia'],
+    loves:['Bright indirect light for best leaf color','Being pinched back — makes it bushy','Regular propagation in water','Consistent moderate moisture'],
+    hates:['Low light — loses its beautiful purple coloring','Overwatering — leads to mushy stems','Dry air in winter (misting helps)','Being chewed on by dogs']
+  },
+  {
+    id:'lucky-bamboo-room', name:'Lucky Bamboo', latin:'Dracaena sanderiana',
+    emoji:'🎋', color:'#e4f0e4', aquarium:false,
+    room:'Living Room',
+    desc:'Lucky bamboo — despite the name, this is not true bamboo at all, but a Dracaena. Sold in decorative vases with water or in soil. The twisted and tiered stalks are trained over years. Long-lived and low-maintenance once established. A good omen plant in many East Asian traditions — three stalks represent happiness, wealth, and longevity.',
+    light:'Low to medium indirect light. One of the more shade-tolerant houseplants. Avoid direct sun which scorches leaves.',
+    water:'If in water: change the water every 7–14 days and keep roots submerged. Use filtered or distilled water — fluoride in tap water causes yellow tips. If in soil: keep moist but not soggy.',
+    soil:'If in soil: well-draining potting mix. Most people keep it in water with decorative pebbles.',
+    humidity:'Tolerates normal indoor humidity well.',
+    temp:'65–90°F. Avoid cold drafts and air conditioning vents.',
+    toxicity:'⚠️ Toxic to dogs — causes nausea, vomiting, and weakness. Keep out of reach.',
+    wiki:['Dracaena_sanderiana'],
+    loves:['Indirect light — tolerates low light well','Filtered or distilled water (avoids fluoride damage)','Stable warm temperatures','Being left alone — slow and steady'],
+    hates:['Direct sun — burns leaves','Fluoridated or chlorinated tap water (causes yellow tips)','Cold drafts','Being in reach of your dogs — toxic']
+  },
+  {
+    id:'orchid', name:'Orchid', latin:'Phalaenopsis sp. (Moth Orchid)',
+    emoji:'🌸', color:'#f4e8f0', aquarium:false,
+    room:'Living Room',
+    desc:'Almost certainly a Phalaenopsis (moth orchid) — by far the most common orchid sold indoors and one of the most beginner-friendly. Flat-faced flowers in white, pink, purple, or patterned, blooming for 2–4 months. After blooms drop, the plant is not dead — with good care it will rebloom from the same spike or a new one. The key is resisting the urge to overwater.',
+    light:'Bright indirect light — an east window is ideal. West window works. No direct midday sun.',
+    water:'Ice cube method or deep soak: water once a week with 3 ice cubes OR soak the pot in water for 15 minutes, then drain completely. Never let it sit in standing water.',
+    soil:'Orchid bark mix (not potting soil) — needs excellent airflow around roots. Clear pots help you monitor root health — green roots = hydrated, silver-gray = needs water.',
+    humidity:'Prefers 50–70% humidity. A pebble tray with water beneath the pot helps.',
+    temp:'65–80°F days; benefits from a 10°F drop at night to trigger reblooming.',
+    toxicity:'Non-toxic to dogs ✓ — safe if curious noses investigate.',
+    wiki:['Phalaenopsis'],
+    loves:['Bright indirect east or west light','Weekly consistent watering with full drainage','Cooler nights (55–65°F) to trigger a new bloom spike','Humidity around the pot — pebble tray or grouping plants'],
+    hates:['Standing water at the roots — root rot is the #1 killer','Direct sun — scorches delicate petals and leaves','Being repotted while blooming','Dry air and heat from vents']
+  }
+];
+
+const AQUARIUM_PLANTS = [
+  {
+    id:'pothos-aqua', name:'Golden Pothos', latin:'Epipremnum aureum',
+    emoji:'🌿', color:'#ddf0d8', aquarium:true,
+    room:'Aquarium',
+    desc:'Golden pothos growing emersed in your aquarium — roots in the water, leaves trailing above the surface. This is one of the best natural filtration plants you can use: the roots actively absorb nitrates and ammonia directly from the water, acting as a living filter. The leaves grow vigorously above the tank and can trail beautifully.',
+    light:'Low to bright indirect — very adaptable. Thrives under standard aquarium lighting.',
+    water:'Roots stay submerged; leaves above water. Change tank water as usual — the plant loves the nutrients.',
+    soil:'No soil needed — roots anchor in the tank structure or hang freely in water.',
+    humidity:'Loves the humidity above the tank surface.',
+    temp:'68–80°F water temperature — well within tropical fish range.',
+    toxicity:'⚠️ Toxic to dogs if eaten — but aquarium placement keeps it out of reach.',
+    wiki:['Epipremnum_aureum','Pothos'],
+    loves:['Having roots in nutrient-rich tank water','Fish waste — it uses nitrates as fertilizer','Trailing freely above the waterline','Regular light cycles from aquarium lighting'],
+    hates:['Fully submerged leaves — keep foliage above waterline','Low light conditions (leaves pale out)','Very cold water','Being fully submerged — this is an emersed grower']
+  },
+  {
+    id:'lucky-bamboo-aqua', name:'Lucky Bamboo (Aquarium)', latin:'Dracaena sanderiana',
+    emoji:'🎋', color:'#deeedd', aquarium:true,
+    room:'Aquarium',
+    desc:'Lucky bamboo growing emersed in your aquarium — a popular and effective setup. Roots absorb nitrates from the water acting as a natural biofilter, while the stalks and leaves grow above the surface. Important: only the roots should be submerged. Fully submerged stalks will rot over time. Thrives in aquarium setups with consistent light.',
+    light:'Moderate indirect light — aquarium hood lighting is usually sufficient.',
+    water:'Roots submerged; stalks and leaves above waterline at all times.',
+    soil:'No soil — roots anchor freely in the tank or in a weighted tube/holder.',
+    humidity:'Benefits from the humid air above the tank.',
+    temp:'65–80°F water — compatible with most tropical fish setups.',
+    toxicity:'⚠️ Toxic to dogs — but aquarium placement keeps it safely out of reach.',
+    wiki:['Dracaena_sanderiana'],
+    loves:['Having roots in the tank to absorb fish waste','Consistent warm water temperature','Moderate aquarium lighting','Stable placement — dislikes being frequently rearranged'],
+    hates:['Fully submerged stalks — they will rot','Cold water below 65°F','Darkness — needs at least 8 hours of light','Fluoridated water — use dechlorinated water in the tank']
+  },
+  {
+    id:'tradescantia-aqua', name:'Tradescantia (Aquarium)', latin:'Tradescantia zebrina',
+    emoji:'🌸', color:'#ecddf4', aquarium:true,
+    room:'Aquarium',
+    desc:'Tradescantia growing emersed in the aquarium — a less common but effective setup. Roots absorb nutrients from tank water while the striking purple-silver foliage cascades above the surface. The colorful leaves add visual interest above the tank. Fast-growing above the waterline with adequate light.',
+    light:'Bright indirect light above the tank for best leaf color. Low light causes the purple to fade.',
+    water:'Roots in tank water; all foliage above waterline.',
+    soil:'No soil needed — roots hang freely or anchor in tank décor.',
+    humidity:'Loves the humid air directly above an aquarium.',
+    temp:'65–80°F — compatible with most tropical setups.',
+    toxicity:'⚠️ Mildly toxic to dogs — aquarium placement keeps it out of reach.',
+    wiki:['Tradescantia_zebrina'],
+    loves:['Nutrient-rich tank water for the roots','Bright indirect light for vivid leaf color','The humid microclimate above the water surface','Fast growth — trim regularly to keep tidy'],
+    hates:['Fully submerged foliage — keep leaves above water','Low light — loses purple color and vibrancy','Cold water below 65°F','Stagnant water with no circulation']
+  }
+];
+
+// Wikipedia photo lookup for houseplants
+const HOUSE_WIKI = {
+  'succulent-mix': ['Echeveria','Haworthia'],
+  'cactus': ['Cactaceae','Echinopsis_pachanoi'],
+  'jade-plant': ['Crassula_ovata'],
+  'monstera': ['Monstera_deliciosa'],
+  'rubber-plant': ['Ficus_elastica'],
+  'tradescantia': ['Tradescantia_zebrina'],
+  'lucky-bamboo-room': ['Dracaena_sanderiana'],
+  'orchid': ['Phalaenopsis'],
+  'pothos-aqua': ['Epipremnum_aureum'],
+  'lucky-bamboo-aqua': ['Dracaena_sanderiana'],
+  'tradescantia-aqua': ['Tradescantia_zebrina']
+};
+
+// Use the shared getPhotos() function defined above — no Wikipedia needed
+function fetchHousePlantPhoto(id){ return Promise.resolve(getPhotos(id)); }
+
+function housePlantCard(p, isAqua){
+  const accentColor = isAqua ? 'rgba(80,144,192,0.15)' : 'rgba(74,48,32,0.12)';
+  const badge = isAqua ? `<span style="background:#e8f4ff;border:1px solid #5090c0;border-radius:10px;padding:1px 6px;font-size:0.58rem;color:#2060a0;margin-left:5px;">🐠 aquarium</span>` : '';
+  const toxBadge = p.toxicity.includes('⚠️') ? `<span style="background:#fff0e0;border:1px solid #d4a030;border-radius:10px;padding:1px 6px;font-size:0.58rem;color:#a05010;margin-left:5px;">⚠ dog caution</span>` : `<span style="background:#eefaee;border:1px solid #50a050;border-radius:10px;padding:1px 6px;font-size:0.58rem;color:#207020;margin-left:5px;">✓ dog safe</span>`;
+  return `
+    <div onclick="openHousePlant('${p.id}')" style="
+      background:${p.color};border:1.5px solid ${accentColor};border-radius:14px;
+      padding:0;margin-bottom:12px;cursor:pointer;overflow:hidden;
+      transition:transform .13s,box-shadow .13s;
+    " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 5px 16px rgba(44,31,14,0.14)'"
+       onmouseout="this.style.transform='';this.style.boxShadow=''">
+      <div id="hp-cover-${p.id}" style="height:100px;overflow:hidden;border-radius:12px 12px 0 0;background:#ddd8cc;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:2.5rem;">${p.emoji}</span>
+      </div>
+      <div style="padding:12px;">
+        <div style="display:flex;align-items:flex-start;gap:8px;">
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+              <span style="font-family:'Fraunces',serif;font-size:0.9rem;color:#3a2010;">${p.name}</span>
+              ${badge}${toxBadge}
+            </div>
+            <div style="font-size:0.65rem;color:rgba(58,32,16,0.55);font-style:italic;margin-top:1px;">${p.latin}</div>
+            <div style="font-size:0.73rem;color:#5a3820;margin-top:5px;line-height:1.4;">${p.desc.substring(0,90)}…</div>
+          </div>
+          <div style="font-size:0.7rem;color:rgba(58,32,16,0.35);flex-shrink:0;padding-top:2px;">→</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderHouseplants(){
+  const grid = document.getElementById('house-plant-grid');
+  const agrid = document.getElementById('aquarium-plant-grid');
+  if(!grid || !agrid) return;
+  grid.innerHTML = HOUSEPLANTS.map(p=>housePlantCard(p,false)).join('');
+  agrid.innerHTML = AQUARIUM_PLANTS.map(p=>housePlantCard(p,true)).join('');
+
+  // Photos are synchronous now — inject immediately
+  [...HOUSEPLANTS,...AQUARIUM_PLANTS].forEach(p=>{
+    const photos = getPhotos(p.id);
+    const cover = document.getElementById('hp-cover-'+p.id);
+    if(cover && photos.length>0){
+      cover.innerHTML=`<img src="${photos[0]}" style="width:100%;height:100px;object-fit:cover;border-radius:12px 12px 0 0;" onerror="this.parentElement.innerHTML='<span style=font-size:2.5rem>${p.emoji}</span>'"/>`;
+    }
+  });
+}
+
+function openHousePlant(id){
+  const p = [...HOUSEPLANTS,...AQUARIUM_PLANTS].find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('m-em').textContent = p.emoji;
+  document.getElementById('m-name').textContent = p.name;
+  document.getElementById('m-latin').textContent = p.latin;
+  document.getElementById('m-desc').textContent = p.desc;
+  document.getElementById('m-sun').textContent = p.light;
+  document.getElementById('m-water').textContent = p.water;
+  document.getElementById('m-soil').textContent = p.aquarium ? `Tank: ${p.temp} · ${p.humidity}` : p.soil;
+  document.getElementById('m-timing').textContent = p.toxicity;
+
+  // Seasons badges reused for aquarium / room badge
+  const roomBadge = p.aquarium
+    ? '<span class="s-badge" style="background:#e8f4ff;color:#2060a0;border:1px solid #5090c0;">🐠 Aquarium Emersed</span>'
+    : '<span class="s-badge" style="background:#f0f4e8;color:#3a5010;border:1px solid #6a8848;">🛋️ Living Room</span>';
+  const toxBadge = p.toxicity.includes('⚠️')
+    ? '<span class="s-badge" style="background:#fff0e0;color:#a05010;border:1px solid #d4a030;">⚠ Toxic to Dogs</span>'
+    : '<span class="s-badge" style="background:#eefaee;color:#207020;border:1px solid #50a050;">✓ Dog Safe</span>';
+  document.getElementById('m-seasons').innerHTML = roomBadge + toxBadge;
+
+  // Tips = loves + hates
+  const lovesHtml = p.loves.map(l=>`<li style="color:#2a5010;">💚 ${l}</li>`).join('');
+  const hatesHtml = p.hates.map(h=>`<li style="color:#a03010;">🚫 ${h}</li>`).join('');
+  const extraInfo = p.aquarium ? `<li style="border-top:1px solid rgba(80,144,192,0.2);padding-top:8px;margin-top:4px;color:#2060a0;">💧 Water temp: ${p.temp} — Humidity: ${p.humidity}</li>` : `<li style="border-top:1px solid rgba(106,136,72,0.2);padding-top:8px;margin-top:4px;color:#5a7020;">🌡 ${p.temp} · Humidity: ${p.humidity}</li>`;
+  document.getElementById('m-tips').innerHTML =
+    `<li style="font-weight:600;color:#2a5010;list-style:none;margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid rgba(106,136,72,0.15);">Loves ↓</li>${lovesHtml}<li style="font-weight:600;color:#a03010;list-style:none;margin:8px 0 4px;padding-bottom:4px;border-bottom:1px solid rgba(180,80,32,0.15);">Dislikes ↓</li>${hatesHtml}${extraInfo}`;
+
+  document.getElementById('back-btn').style.display='none';
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+
+  // Photo gallery — synchronous
+  const gallery = document.getElementById('weed-gallery');
+  const galleryImgs = document.getElementById('weed-gallery-imgs');
+  if(gallery) gallery.style.display='none';
+  const photos = getPhotos(id);
+  if(photos.length>0 && galleryImgs && gallery){
+    galleryImgs.innerHTML=photos.slice(0,2).map(url=>
+      `<img src="${url}" style="flex:1;min-width:0;height:150px;object-fit:cover;border-radius:8px;" onerror="this.style.display='none'"/>`
+    ).join('');
+    galleryImgs.style.cssText='display:flex;gap:6px;';
+    gallery.style.display='block';
+  }
+}
 </script>
 </body>
 </html>
