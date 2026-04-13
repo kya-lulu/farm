@@ -2332,39 +2332,37 @@ const WEEDS = [
   }
 ];
 
-// Hardcoded Unsplash photo URLs — Wikipedia API is not accessible from browser in this deployment
-// All IDs verified working. Format: id -> [cover_url, gallery_url2, gallery_url3]
+// iNaturalist species photos — real photos of the actual species, verified HTTP 200
+// Source: iNaturalist open data, CC-licensed community observations
 const PLANT_PHOTOS = {
-  // Weeds
-  'fescue':            ['1416879595882-3373a0480b5b','1558618666-fcd25c85cd64'],
-  'japanese-knotweed': ['1629196914168-3a2652305f9f','1593691509543-c55fb32d8de5'],
-  'creeping-buttercup':['1632207691143-643e2a9a9361','1629196914168-3a2652305f9f'],
-  'chickweed':         ['1416879595882-3373a0480b5b','1629196914168-3a2652305f9f'],
-  'bindweed':          ['1593691509543-c55fb32d8de5','1416879595882-3373a0480b5b'],
-  'wild-geranium':     ['1558618666-fcd25c85cd64','1593691509543-c55fb32d8de5'],
-  'shotweed':          ['1629196914168-3a2652305f9f','1416879595882-3373a0480b5b'],
-  'horsetail':         ['1416879595882-3373a0480b5b','1629196914168-3a2652305f9f'],
-  'clover':            ['1416879595882-3373a0480b5b','1629196914168-3a2652305f9f'],
-  'dandelion':         ['1629196914168-3a2652305f9f','1416879595882-3373a0480b5b'],
-  'sticky-willy':      ['1593691509543-c55fb32d8de5','1416879595882-3373a0480b5b'],
-  // Houseplants
-  'succulent-mix':     ['1485955900006-10f4d324d411','1509423350716-97f9360b4e09'],
-  'cactus':            ['1509423350716-97f9360b4e09','1485955900006-10f4d324d411'],
-  'jade-plant':        ['1485955900006-10f4d324d411','1601758228041-f3b2795255f1'],
-  'monstera':          ['1512428813834-c702c7702b78','1512428813834-c702c7702b78'],
-  'rubber-plant':      ['1610397648930-477b8c7f0943','1512428813834-c702c7702b78'],
-  'tradescantia':      ['1632207691143-643e2a9a9361','1558618666-fcd25c85cd64'],
-  'lucky-bamboo-room': ['1601758228041-f3b2795255f1','1485955900006-10f4d324d411'],
-  'orchid':            ['1558618666-fcd25c85cd64','1632207691143-643e2a9a9361'],
-  'pothos-aqua':       ['1593482892290-f54927ae1bb6','1512428813834-c702c7702b78'],
-  'lucky-bamboo-aqua': ['1601758228041-f3b2795255f1','1593482892290-f54927ae1bb6'],
-  'tradescantia-aqua': ['1632207691143-643e2a9a9361','1593482892290-f54927ae1bb6'],
+  'succulent-mix':     'https://inaturalist-open-data.s3.amazonaws.com/photos/180450/medium.jpg',
+  'cactus':            'https://inaturalist-open-data.s3.amazonaws.com/photos/13279984/medium.jpeg',
+  'jade-plant':        'https://inaturalist-open-data.s3.amazonaws.com/photos/39359845/medium.jpeg',
+  'monstera':          'https://static.inaturalist.org/photos/10534833/medium.jpeg',
+  'rubber-plant':      'https://static.inaturalist.org/photos/56915457/medium.jpeg',
+  'tradescantia':      'https://static.inaturalist.org/photos/100260171/medium.jpeg',
+  'lucky-bamboo-room': 'https://static.inaturalist.org/photos/106303846/medium.jpg',
+  'orchid':            'https://inaturalist-open-data.s3.amazonaws.com/photos/368194406/medium.jpeg',
+  'pothos-aqua':       'https://static.inaturalist.org/photos/100110119/medium.jpg',
+  'lucky-bamboo-aqua': 'https://static.inaturalist.org/photos/106303846/medium.jpg',
+  'tradescantia-aqua': 'https://static.inaturalist.org/photos/100260171/medium.jpeg',
+  'fescue':            'https://inaturalist-open-data.s3.amazonaws.com/photos/516293737/medium.jpg',
+  'japanese-knotweed': 'https://inaturalist-open-data.s3.amazonaws.com/photos/74418856/medium.jpg',
+  'creeping-buttercup':'https://inaturalist-open-data.s3.amazonaws.com/photos/38652836/medium.jpeg',
+  'chickweed':         'https://inaturalist-open-data.s3.amazonaws.com/photos/116412091/medium.jpeg',
+  'bindweed':          'https://inaturalist-open-data.s3.amazonaws.com/photos/209325684/medium.jpg',
+  'wild-geranium':     'https://inaturalist-open-data.s3.amazonaws.com/photos/85572773/medium.jpg',
+  'shotweed':          'https://inaturalist-open-data.s3.amazonaws.com/photos/181993101/medium.jpg',
+  'horsetail':         'https://inaturalist-open-data.s3.amazonaws.com/photos/72597295/medium.jpg',
+  'clover':            'https://inaturalist-open-data.s3.amazonaws.com/photos/507060667/medium.jpg',
+  'dandelion':         'https://inaturalist-open-data.s3.amazonaws.com/photos/35280454/medium.jpg',
+  'sticky-willy':      'https://inaturalist-open-data.s3.amazonaws.com/photos/113728457/medium.jpeg',
 };
 
 function getPhotos(id){
-  const ids = PLANT_PHOTOS[id];
-  if(!ids) return [];
-  return ids.map(pid => `https://images.unsplash.com/photo-${pid}?w=600&q=80`);
+  const url = PLANT_PHOTOS[id];
+  if(!url) return [];
+  return [url];
 }
 
 // Legacy function name kept so existing renderWeeds calls still work
@@ -2805,21 +2803,7 @@ const AQUARIUM_PLANTS = [
 ];
 
 // Wikipedia photo lookup for houseplants
-const HOUSE_WIKI = {
-  'succulent-mix': ['Echeveria','Haworthia'],
-  'cactus': ['Cactaceae','Echinopsis_pachanoi'],
-  'jade-plant': ['Crassula_ovata'],
-  'monstera': ['Monstera_deliciosa'],
-  'rubber-plant': ['Ficus_elastica'],
-  'tradescantia': ['Tradescantia_zebrina'],
-  'lucky-bamboo-room': ['Dracaena_sanderiana'],
-  'orchid': ['Phalaenopsis'],
-  'pothos-aqua': ['Epipremnum_aureum'],
-  'lucky-bamboo-aqua': ['Dracaena_sanderiana'],
-  'tradescantia-aqua': ['Tradescantia_zebrina']
-};
-
-// Use the shared getPhotos() function defined above — no Wikipedia needed
+// Use the shared getPhotos() function — iNaturalist URLs baked in above
 function fetchHousePlantPhoto(id){ return Promise.resolve(getPhotos(id)); }
 
 function housePlantCard(p, isAqua){
