@@ -395,9 +395,13 @@ svg text{font-family:'Instrument Sans',sans-serif;}
     <div class="grid">
       <div class="chip" onclick="openPlant('deck-lavender')"><span class="chip-em">💜</span><div class="chip-name">French Lavender</div><div class="chip-tag">pot · deck ✓</div></div>
       <div class="chip" onclick="openPlant('deck-maple')"><span class="chip-em">🍁</span><div class="chip-name">Japanese Maple</div><div class="chip-tag">pot · deck ✓</div></div>
-      <div class="chip" onclick="openPlant('deck-strawberry')"><span class="chip-em">🍓</span><div class="chip-name">Strawberries</div><div class="chip-tag">pot · sheltered spot ✦</div></div>
+      <div class="chip new" onclick="openPlant('deck-strawberry')"><span class="chip-em">🍓</span><div class="chip-name">Strawberries</div><div class="chip-tag new-tag">2-3 gal pot · sulfur amended · May 3 ✦</div></div>
       <div class="chip" onclick="openPlant('deck-lettuce')"><span class="chip-em">🥗</span><div class="chip-name">Butter Lettuce</div><div class="chip-tag">pot · wind-sensitive</div></div>
       <div class="chip" onclick="openPlant('calla-lily')"><span class="chip-em">🌷</span><div class="chip-name">Calla Lily</div><div class="chip-tag">pot · deck ✓</div></div>
+      <div class="chip new" onclick="openPlant('deck-perilla-green')"><span class="chip-em">🌿</span><div class="chip-name">Perilla (Green)</div><div class="chip-tag new-tag">1 gal pot · May 3 ✦</div></div>
+      <div class="chip new" onclick="openPlant('deck-perilla-purple')"><span class="chip-em">🌿</span><div class="chip-name">Perilla (Purple)</div><div class="chip-tag new-tag">1 gal pot · May 3 ✦</div></div>
+      <div class="chip new" onclick="openPlant('culantro')"><span class="chip-em">🌿</span><div class="chip-name">Culantro</div><div class="chip-tag new-tag">gray pot · May 3 ✦</div></div>
+      <div class="chip new" onclick="openPlant('peppermint')"><span class="chip-em">🌿</span><div class="chip-name">Peppermint</div><div class="chip-tag new-tag">vase · containerized ✦</div></div>
     </div>
   </div>
 
@@ -580,9 +584,10 @@ svg text{font-family:'Instrument Sans',sans-serif;}
     </div>
     <div class="sect">Right · Assorted Bed</div>
     <div class="grid">
-      <div class="chip" onclick="openZone('right-bed')"><span class="chip-em">🌿</span><div class="chip-name">Assorted Bed</div><div class="chip-tag">empty · available to plant</div></div>
+      <div class="chip" onclick="openZone('right-bed')"><span class="chip-em">🌿</span><div class="chip-name">Assorted Bed</div><div class="chip-tag">cilantro in · room for more</div></div>
+      <div class="chip new" onclick="openPlant('cilantro')"><span class="chip-em">🌿</span><div class="chip-name">Cilantro</div><div class="chip-tag new-tag">planted May 3 ✦</div></div>
     </div>
-    <div class="note">Nothing planted here yet — shaded by plum trees, siltier soil. Good spot for shade-tolerant flowers.</div>
+    <div class="note">Cilantro just went in May 3 — afternoon shade from plum trees protects it from heat and slows bolting. Still room here for more shade-tolerant herbs or flowers.</div>
     <div class="sect">Plum Trees</div>
     <div class="grid">
       <div class="chip" onclick="openPlant('plum-tree')"><span class="chip-em">🌸</span><div class="chip-name">Plum Trees (~7)</div><div class="chip-tag">left side + main lawn</div></div>
@@ -813,6 +818,16 @@ svg text{font-family:'Instrument Sans',sans-serif;}
 <!-- AQUARIUM SECTION -->
 <div style="font-size:0.6rem;letter-spacing:0.13em;text-transform:uppercase;color:#5090c0;margin:20px 0 10px;padding-bottom:4px;border-bottom:1.5px solid rgba(80,144,192,0.25);font-weight:500;">🐠 Aquarium Plants · Living Room Tanks</div>
 <div id="aquarium-plant-grid"></div>
+
+<!-- INDOOR STARTS · PENDING TRANSPLANT -->
+<div style="font-size:0.6rem;letter-spacing:0.13em;text-transform:uppercase;color:#6a8848;margin:20px 0 10px;padding-bottom:4px;border-bottom:1.5px solid rgba(106,136,72,0.18);font-weight:500;">🌱 Indoor Starts · Pending Transplant</div>
+<div style="font-size:0.7rem;color:#6a8848;line-height:1.5;margin:-4px 0 12px;">Tropical heat-lovers acquired April 19–20. Indoors until consistent 55°F+ nights and 60°F+ soil — target transplant late May. Harden off ~1 week before move-out.</div>
+<div class="grid">
+  <div class="chip new" onclick="openPlant('vietnamese-eggplant-1')"><span class="chip-em">🍆</span><div class="chip-name">Vietnamese Eggplant #1</div><div class="chip-tag new-tag">indoor · white ceramic ✦</div></div>
+  <div class="chip new" onclick="openPlant('vietnamese-eggplant-2')"><span class="chip-em">🍆</span><div class="chip-name">Vietnamese Eggplant #2</div><div class="chip-tag new-tag">indoor · 1 gal pot ✦</div></div>
+  <div class="chip new" onclick="openPlant('ong-choy')"><span class="chip-em">🌱</span><div class="chip-name">Ong Choy</div><div class="chip-tag new-tag">indoor · 4-in pot ✦</div></div>
+  <div class="chip new" onclick="openPlant('malabar-spinach')"><span class="chip-em">🌿</span><div class="chip-name">Malabar Spinach</div><div class="chip-tag new-tag">indoor · 4-in + stake ✦</div></div>
+</div>
 
 </div>
 </div>
@@ -1704,7 +1719,7 @@ const P={
   sun:'Partial shade to full sun — morning sun ideal, protect from intense afternoon heat',water:'Moderate — pots dry out faster than ground. Check every 2–3 days in summer',soil:'Well-draining potting mix with some organic matter',timing:'Foliage spring–fall · bare in winter',seasons:['sp','su','fa'],
   tips:['Wind on the deck can scorch leaves in hot dry spells — move if leaves burn at edges','Water deeply when you water — shallow watering encourages surface roots','Repot every 3 years — root bound maples struggle','Spectacular fall color: reds, oranges, golds depending on variety','Avoid fertilizing after July — encourages soft growth that gets frost-damaged']},
 'deck-strawberry':{em:'🍓',name:'Strawberries (Deck Pots)',latin:'Fragaria × ananassa',
-  desc:'Strawberry pots on the upper deck. The deck\'s wind exposure is the main concern — strawberries prefer a sheltered sunny spot. Janelle\'s preference is to keep them in pots rather than in-ground. Consider moving to a more sheltered sunny location to improve fruiting.',
+  desc:'Strawberry plant (June-bearing variety, likely Hood or Puget Crimson — "...t Crimson" tag) potted up to a 2–3 gallon container on May 3, 2026. NearSource pink raised bed mix amended with 2 tbsp elemental sulfur to lower pH toward 5.5–6.5 range. Crown planted at soil surface (not buried). Located on deck in dappled shade for first 3 days, then moves to sheltered sunny spot. Janelle\'s preference is to keep them in pots rather than in-ground.',
   sun:'Full sun — but needs shelter from strong wind',water:'Every 2–3 days — pots dry out faster than ground, especially on a windy deck',soil:'Rich potting mix — strawberries are heavy feeders for fruit',timing:'Fruits May–Jul · runners in summer',seasons:['sp','su'],
   tips:['⚠️ Wind dries pots fast — check daily in dry windy weather','Move to sheltered sunny spot for better fruiting — side of house, lower terrace edge','Feed with liquid fertilizer every 2 weeks when flowering and fruiting','Remove runners unless you want new plants — they divert energy from fruit','Replace plants every 3 years — production drops significantly after year 3']},
 'deck-lettuce':{em:'🥗',name:'Butter Lettuce (Deck Pot)',latin:'Lactuca sativa',
@@ -1715,6 +1730,42 @@ const P={
   desc:'Calla lily in a pot on the upper deck. Elegant, architectural flowers — the classic white spathe with yellow spadix. Calla lilies prefer consistent moisture and can handle the deck\'s full sun if kept well watered. ⚠️ Toxic to dogs — keep out of reach.',
   sun:'Full sun to partial shade — tolerates deck exposure well if watered consistently',water:'Moderate to high — keep soil consistently moist, especially when in bloom',soil:'Rich, moisture-retentive mix — unlike most deck plants, callas like moisture',timing:'Blooms spring–summer · dormant in winter',seasons:['sp','su'],
   tips:['⚠️ Toxic to dogs — ensure pot is not accessible to dogs on or near the deck','Keep consistently moist — unlike lavender, callas do not want to dry out',  'Feed monthly with liquid fertilizer through blooming season','Allow to go dormant in fall — reduce water, let foliage die back','Can overwinter in pot if protected from hard frost — Zone 9a is usually fine']},
+'deck-perilla-green':{em:'🌿',name:'Perilla Green (Shiso)',latin:'Perilla frutescens',
+  desc:'Korean/Japanese culinary herb — slightly anise/cinnamon flavor. Potted up to 1-gallon container on May 3, 2026 from seller\'s nursery pot using NearSource pink raised bed mix. Placed in dappled shade or morning sun only for the first 3 days post-transplant during the May 3–4 heat spike (76°F+), then moves to a full-sun position on the deck after the Wednesday cool-down.',
+  sun:'Full sun once established · partial shade okay',water:'Keep root ball moist for first 3–4 weeks; then water when top inch of soil is dry',soil:'Rich, well-drained — NearSource pink mix',timing:'Harvest May–Sep · pinch tips to extend',seasons:['sp','su','fa'],
+  tips:['Pinch growing tips at 6 inches to encourage bushy branching','Same species as purple perilla — will cross-pollinate if seeds are saved','Self-seeding controlled by container — no risk of escape','Use leaves like shiso/sesame leaf in wraps, kimchi, or chopped over rice','Cold-sensitive — bring in or compost at first frost']},
+'deck-perilla-purple':{em:'🌿',name:'Perilla Purple (Shiso)',latin:'Perilla frutescens var. crispa',
+  desc:'Purple-leaf cultivar of perilla — anthocyanin-rich leaves used for color and flavor. Potted up to 1-gallon container on May 3, 2026 from seller\'s nursery pot using NearSource pink mix. Same care regime as the green perilla. Placed in dappled shade for the first 3 days during the heat spike, then moved to full sun.',
+  sun:'Full sun once established · partial shade okay',water:'Keep root ball moist for first 3–4 weeks; then water when top inch of soil is dry',soil:'Rich, well-drained — NearSource pink mix',timing:'Harvest May–Sep',seasons:['sp','su','fa'],
+  tips:['Pinch growing tips at 6 inches for branching','Same species as green perilla — they will cross-pollinate if seeds are saved','Beautiful color contrast next to the green cultivar','Use for umeboshi-style pickles, garnish, and color in salads','Cold-sensitive — annual in Seattle']},
+'cilantro':{em:'🌿',name:'Cilantro',latin:'Coriandrum sativum',
+  desc:'Planted in T4 Assorted Bed on May 3, 2026 — afternoon shade from the plum trees protects from heat and slows bolting versus a full-sun spot. Spaced 6 inches apart. Cool-season herb that bolts as soon as it gets warm, so the partial-shade position here meaningfully extends the harvest window.',
+  sun:'Partial shade preferred · bolts fast in full sun',water:'Water deeply at the root ball every 1–2 days for the first 3–4 weeks of establishment, then taper',soil:'Loamy, moisture-retentive — siltier T4 soil suits it well',timing:'Leaf harvest May–Jun · seed (coriander) Jul if allowed to bolt',seasons:['sp','su'],
+  tips:['Slow Bolt is the variety to seek out — bred for spring warmth','Harvest outer leaves early and often to delay bolting','Once it bolts and flowers, leaves taste soapy — let some go to seed for coriander','Succession sow every 2–3 weeks for continuous supply','Self-seeds readily in this bed if allowed']},
+'culantro':{em:'🌿',name:'Culantro (Recao)',latin:'Eryngium foetidum',
+  desc:'Caribbean / Southeast Asian culinary herb — more pungent and longer-lasting than cilantro, with stronger heat tolerance and a much slower bolt. Potted in the gray concrete pot on May 3, 2026 with NearSource pink mix. Placed in deep shade for the first 48 hours during the heat spike (May 3–4), then moves to a partial-shade or morning-sun position.',
+  sun:'Partial shade preferred · tolerates morning sun',water:'Consistent moisture — water when top inch is dry, roughly every 2–3 days. Pots dry faster than ground.',soil:'Rich, well-drained — NearSource pink mix',timing:'Harvest leaves May–Sep',seasons:['sp','su','fa'],
+  tips:['Use leaves like cilantro — chop fine, more potent so less needed','Native to tropical Americas — perennial in Zone 9+ but treat as annual or overwinter indoors in Seattle','Bolts much later than cilantro — good companion herb to extend the cilantro window','Spiny leaf edges — handle with care','Pairs well with sofrito, Vietnamese pho garnish, Thai curries']},
+'vietnamese-eggplant-1':{em:'🍆',name:'Vietnamese Eggplant #1',latin:'Solanum melongena',
+  desc:'Acquired April 19–20, 2026. Long, slender purple Asian eggplant variety — used in Vietnamese stir-fries and stews. Tropical heat-lover — needs consistent 55°F+ nights and 60°F+ soil before going outside. Currently in a white ceramic vase indoors. Final destination: T1 Sunny Edibles, transplant late May (~May 22–28) after hardening off (~May 12–13).',
+  sun:'Full sun once outdoors',water:'Standard indoor care — water when top inch is dry',soil:'Rich, well-drained — NearSource pink mix when transplanted',timing:'Indoors now · transplant late May · harvest Jul–Sep',seasons:['sp','su'],
+  tips:['Cold-sensitive — do NOT plant outside until late May','Harden off about 7–10 days before transplant: 1 hr outside day 1, ramp up to full days','Final destination is T1 Sunny Edibles','Keep night temps above 55°F before move-out','Stake when fruit starts to set']},
+'vietnamese-eggplant-2':{em:'🍆',name:'Vietnamese Eggplant #2',latin:'Solanum melongena',
+  desc:'Acquired April 19–20, 2026. Potted up to a 1-gallon nursery pot on May 4, 2026 (was overdue from the seller\'s tiny pot) using NearSource pink mix. Tropical heat-lover — same care as #1. Currently indoors. Final destination: T1 Sunny Edibles, transplant late May after hardening off.',
+  sun:'Full sun once outdoors',water:'Standard indoor care — water when top inch is dry',soil:'Rich, well-drained — NearSource pink mix',timing:'Indoors now · transplant late May · harvest Jul–Sep',seasons:['sp','su'],
+  tips:['Plant outdoors only after consistent 55°F+ nights','Pot-up was overdue — root ball should establish over the next 2–3 weeks','Same care as #1 — keep them paired in T1 once outside','Pinch first flower if growth still feels slow at transplant','Stake when fruit starts to set']},
+'ong-choy':{em:'🌱',name:'Ong Choy (Water Spinach)',latin:'Ipomoea aquatica',
+  desc:'Southeast Asian leafy green — hollow-stemmed, mild flavor. Acquired April 19–20, 2026. Potted up to a 4-inch pot on May 4, 2026. Tropical — needs 60°F+ soil and consistent 55°F+ nights before going outside. Currently indoors. Final destination: T2 Greens Bed (or a sunny in-ground spot), transplant late May (~May 22–28) after hardening off (~May 18–20).',
+  sun:'Full sun once outdoors',water:'Loves water — keep consistently moist; can tolerate boggy conditions',soil:'Rich, moisture-retentive — NearSource pink mix',timing:'Indoors now · transplant late May · harvest Jun–Sep',seasons:['sp','su','fa'],
+  tips:['Cold-sensitive — drops dead below 50°F','Pinch growing tips at 6 inches indoors to encourage branching for more leaf production','Use leaves and tender stems in stir-fries — classic with garlic and fermented bean curd','Loves boggy ground — fine in the wettest part of T2','Indoor saucer can sit in a tray of water without issue']},
+'malabar-spinach':{em:'🌿',name:'Malabar Spinach',latin:'Basella alba',
+  desc:'South Asian / tropical vining leafy green used as a heat-tolerant spinach substitute. Acquired April 19–20, 2026. Potted up to a 4-inch pot with a small stake on May 4, 2026 (this is a vining grower and benefits from early structure) using NearSource pink mix. Tropical — needs 60°F+ soil and 55°F+ nights. Currently indoors. Final destination: T2 area with a trellis, transplant late May after hardening off.',
+  sun:'Full sun once outdoors',water:'Consistent moisture for best leaf production',soil:'Rich, moisture-retentive — NearSource pink mix',timing:'Indoors now · transplant late May · explosive growth Jul–Sep',seasons:['sp','su','fa'],
+  tips:['Vigorous vine — needs trellis or support structure once outside','Cold-sensitive','Slow to start growing until summer warmth arrives, then explodes','Leaves are slightly mucilaginous when cooked — good in soups and stir-fries','Start training to the stake now while it is small']},
+'peppermint':{em:'🌿',name:'Peppermint',latin:'Mentha × piperita',
+  desc:'Acquired April 19–20, 2026. Potted in a vase on the upper deck — must stay containerized as peppermint is aggressively invasive when planted in ground (sends underground runners that take over beds). Cold-tolerant and can stay outside year-round in Zone 9a.',
+  sun:'Partial sun preferred · tolerates full sun if watered well',water:'Keep consistently moist — peppermint is a moisture-lover',soil:'Standard potting mix',timing:'Harvest May–Oct · cut hard 2–3× per season',seasons:['sp','su','fa'],
+  tips:['⚠️ NEVER plant in ground — runners will take over the bed','Pinch tops regularly for bushiness and to prevent flowering (which reduces leaf flavor)','Use in tea, cocktails (mojito, julep), and desserts','Hard cut 2–3 times per season — fresh growth has the best flavor','Overwinters fine in Zone 9a if pot is sheltered from the worst freezes']},
 };
 
 const ZONES={
@@ -1723,7 +1774,7 @@ const ZONES={
   water:'Pots dry faster than ground — check every 1–2 days in dry weather, wind accelerates drying',
   soil:'Container potting mix — refresh top layer annually, repot every 2–3 years',
   desc:'The upper deck holds container plants with a south-facing view over the terraces. Exposed to wind — most sensitive plants (lettuce, strawberries) benefit from a more sheltered position. French lavender, Japanese maple, and calla lily are all well-suited to the deck conditions.',
-  plants:['deck-lavender','deck-maple','deck-strawberry','deck-lettuce','calla-lily'],
+  plants:['deck-lavender','deck-maple','deck-strawberry','deck-lettuce','calla-lily','deck-perilla-green','deck-perilla-purple','culantro','peppermint'],
   suggestions:[
     {name:'Agastache (pot)', timing:'now', when:'Apr–May',
      why:'Thrives in containers on sunny decks, hummingbird magnet, very drought tolerant once established — handles the deck wind well.'},
@@ -1960,8 +2011,8 @@ const ZONES={
   water:'Does not drain as well — siltier soil holds water more. Water every 4–5 days and check before watering.',
   soil:'Siltier — holds water better than sandy beds. More clay-like feel. Less drainage than the Provence lavender bed next to it.',
   timing:'Mixed — herbs and greens year-round',
-  desc:'T4 right flower bed — currently empty, nothing planted yet. Shaded by nearby plum trees. Siltier soil that holds water well. Available for planting.',
-  plants:[],
+  desc:'T4 right flower bed. Cilantro went in May 3, 2026. Shaded by nearby plum trees — the partial shade slows bolting. Siltier soil that holds water well. Still room for more shade-tolerant herbs and flowers.',
+  plants:['cilantro'],
   suggestions:[
     {name:'Oregano', timing:'now', when:'Mar–Apr',
      why:'Already grew here before — oregano loves the afternoon shade from plum trees and silty soil. Perennial so it will return every year once established.',
